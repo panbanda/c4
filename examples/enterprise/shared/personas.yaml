@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=../../../_schema/c4.schema.json
+persons:
+  - id: customer
+    name: Customer
+    description: Online shopper who browses products and places orders
+    tags:
+      - external
+      - end-user
+
+  - id: admin
+    name: Administrator
+    description: Internal staff managing inventory, orders, and system configuration
+    tags:
+      - internal
+      - privileged
+
+  - id: support
+    name: Support Agent
+    description: Customer service representative handling inquiries and issues
+    tags:
+      - internal

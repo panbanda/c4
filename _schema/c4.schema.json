@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "C4 Model",
+  "description": "C4 architecture model definition",
+  "type": "object",
+  "properties": {
+    "persons": {
+      "type": "array",
+      "items": { "$ref": "person.schema.json" }
+    },
+    "systems": {
+      "type": "array",
+      "items": { "$ref": "system.schema.json" }
+    },
+    "containers": {
+      "type": "array",
+      "items": { "$ref": "container.schema.json" }
+    },
+    "components": {
+      "type": "array",
+      "items": { "$ref": "component.schema.json" }
+    },
+    "relationships": {
+      "type": "array",
+      "items": { "$ref": "relationship.schema.json" }
+    },
+    "flows": {
+      "type": "array",
+      "items": { "$ref": "flow.schema.json" }
+    },
+    "deployments": {
+      "type": "array",
+      "items": { "$ref": "deployment.schema.json" }
+    }
+  },
+  "additionalProperties": false
+}

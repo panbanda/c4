@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=../../../../_schema/c4.schema.json
+relationships:
+  - from: order-service.order-api
+    to: payment-service.payment-api
+    description: Initiates payment for orders
+    technology: gRPC, mTLS
+    tags:
+      - cross-service
+      - secure
+
+  - from: payment-service.payment-api
+    to: payment-service.payment-processor
+    description: Queues payment for processing
+    technology: Internal
+
+  - from: payment-service.payment-processor
+    to: stripe
+    description: Processes card payments
+    technology: REST, HTTPS
+    tags:
+      - external
+      - pci-dss
+
+  - from: payment-service.payment-processor
+    to: payment-service.payment-db
+    description: Records payment transactions
+    technology: SQL
+
+  - from: payment-service.payment-api
+    to: payment-service.payment-vault
+    description: Retrieves payment credentials
+    technology: Vault API
+    tags:
+      - security

@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=../../../../_schema/c4.schema.json
+components:
+  - id: jwt-validator
+    name: JWT Validator
+    description: Validates and decodes JWT tokens
+    technology: Go
+    containerId: auth
+    tags:
+      - security
+
+  - id: oauth-provider
+    name: OAuth Provider
+    description: Handles OAuth2 flows for social login
+    technology: Go
+    containerId: auth
+    tags:
+      - security
+      - oauth
+
+  - id: session-manager
+    name: Session Manager
+    description: Manages user sessions and refresh tokens
+    technology: Go, Redis
+    containerId: auth
+    tags:
+      - security
+      - session

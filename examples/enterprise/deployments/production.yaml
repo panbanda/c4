@@ -1,0 +1,164 @@
+# yaml-language-server: $schema=../../../_schema/c4.schema.json
+deployments:
+  - id: production
+    name: Production Environment
+    description: Multi-region production deployment on AWS
+    nodes:
+      - id: aws
+        name: AWS Cloud
+        technology: AWS
+        properties:
+          region: us-east-1
+          dr-region: us-west-2
+        children:
+          - id: vpc-main
+            name: Main VPC
+            technology: AWS VPC
+            properties:
+              cidr: 10.0.0.0/16
+            children:
+              - id: public-subnet
+                name: Public Subnet
+                technology: AWS Subnet
+                properties:
+                  cidr: 10.0.1.0/24
+                children:
+                  - id: alb
+                    name: Application Load Balancer
+                    technology: AWS ALB
+                    instances:
+                      - container: api-gateway.gateway
+                        replicas: 1
+                        properties:
+                          healthcheck: /health
+                          ssl: true
+
+              - id: private-subnet-app
+                name: Application Subnet
+                technology: AWS Subnet
+                properties:
+                  cidr: 10.0.2.0/24
+                children:
+                  - id: ecs-cluster
+                    name: ECS Cluster
+                    technology: AWS ECS Fargate
+                    instances:
+                      - container: api-gateway.web-app
+                        replicas: 3
+                        properties:
+                          cpu: 512
+                          memory: 1024
+                      - container: api-gateway.admin-app
+                        replicas: 2
+                      - container: api-gateway.auth
+                        replicas: 3
+                      - container: order-service.order-api
+                        replicas: 4
+                        properties:
+                          cpu: 1024
+                          memory: 2048
+                      - container: order-service.cart-service
+                        replicas: 3
+                      - container: order-service.order-processor
+                        replicas: 2
+                      - container: inventory-service.inventory-api
+                        replicas: 3
+                      - container: inventory-service.stock-manager
+                        replicas: 2
+                      - container: payment-service.payment-api
+                        replicas: 3
+                        properties:
+                          cpu: 512
+                          memory: 1024
+                          pci-compliant: true
+                      - container: payment-service.payment-processor
+                        replicas: 2
+                      - container: notification-service.notification-api
+                        replicas: 2
+                      - container: notification-service.email-worker
+                        replicas: 3
+                      - container: notification-service.sms-worker
+                        replicas: 2
+
+              - id: private-subnet-data
+                name: Data Subnet
+                technology: AWS Subnet
+                properties:
+                  cidr: 10.0.3.0/24
+                children:
+                  - id: rds-cluster
+                    name: RDS Cluster
+                    technology: AWS RDS PostgreSQL
+                    properties:
+                      instance-type: db.r6g.xlarge
+                      multi-az: true
+                    instances:
+                      - container: order-service.order-db
+                        replicas: 2
+                      - container: inventory-service.inventory-db
+                        replicas: 2
+                      - container: payment-service.payment-db
+                        replicas: 2
+                        properties:
+                          encrypted: true
+                          kms-key: payment-key
+
+                  - id: elasticache
+                    name: ElastiCache Cluster
+                    technology: AWS ElastiCache Redis
+                    properties:
+                      node-type: cache.r6g.large
+                      num-shards: 3
+                    instances:
+                      - container: order-service.order-cache
+                        replicas: 3
+                      - container: api-gateway.rate-limiter
+                        replicas: 3
+
+                  - id: elasticsearch
+                    name: OpenSearch Cluster
+                    technology: AWS OpenSearch
+                    instances:
+                      - container: inventory-service.inventory-search
+                        replicas: 3
+
+                  - id: msk
+                    name: MSK Cluster
+                    technology: AWS MSK (Kafka)
+                    properties:
+                      broker-count: 3
+                      retention: 7d
+                    instances:
+                      - container: order-service.order-events
+                        replicas: 3
+
+                  - id: rabbitmq
+                    name: RabbitMQ Cluster
+                    technology: AWS AmazonMQ
+                    instances:
+                      - container: notification-service.notification-queue
+                        replicas: 2
+
+                  - id: documentdb
+                    name: DocumentDB Cluster
+                    technology: AWS DocumentDB
+                    instances:
+                      - container: notification-service.template-store
+                        replicas: 2
+
+          - id: vault-vpc
+            name: Vault VPC
+            technology: AWS VPC
+            properties:
+              cidr: 10.1.0.0/16
+              isolated: true
+            children:
+              - id: vault-cluster
+                name: Vault Cluster
+                technology: HashiCorp Vault Enterprise
+                properties:
+                  ha-mode: true
+                  auto-unseal: aws-kms
+                instances:
+                  - container: payment-service.payment-vault
+                    replicas: 3

@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=../../../../_schema/c4.schema.json
+systems:
+  - id: payment-service
+    name: Payment Service
+    description: Handles payment processing, refunds, and financial transactions
+    tags:
+      - core
+      - domain:payments
+      - pci-dss
+      - security-critical
+    properties:
+      team: payments-team
+      compliance: PCI-DSS Level 1
+      audit: quarterly

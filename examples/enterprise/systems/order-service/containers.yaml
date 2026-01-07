@@ -1,0 +1,57 @@
+# yaml-language-server: $schema=../../../../_schema/c4.schema.json
+containers:
+  - id: order-api
+    name: Order API
+    description: REST API for order management
+    technology: Go, Chi
+    tags:
+      - api
+      - core
+    properties:
+      port: 8080
+      healthcheck: /health
+
+  - id: order-processor
+    name: Order Processor
+    description: Async worker for order processing and fulfillment
+    technology: Go
+    tags:
+      - worker
+      - async
+    properties:
+      concurrency: 10
+
+  - id: cart-service
+    name: Cart Service
+    description: Manages shopping cart state
+    technology: Go, Redis
+    tags:
+      - api
+      - stateful
+
+  - id: order-db
+    name: Order Database
+    description: Primary database for orders
+    technology: PostgreSQL 15
+    tags:
+      - database
+      - primary
+    properties:
+      storage: 500GB
+      replicas: 2
+
+  - id: order-cache
+    name: Order Cache
+    description: Redis cache for frequently accessed order data
+    technology: Redis 7
+    tags:
+      - cache
+      - redis
+
+  - id: order-events
+    name: Order Events
+    description: Event stream for order state changes
+    technology: Apache Kafka
+    tags:
+      - messaging
+      - events

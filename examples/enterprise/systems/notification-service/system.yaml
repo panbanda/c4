@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=../../../../_schema/c4.schema.json
+systems:
+  - id: notification-service
+    name: Notification Service
+    description: Sends emails, SMS, and push notifications to customers
+    tags:
+      - supporting
+      - domain:communications
+    properties:
+      team: platform-team

@@ -1,0 +1,79 @@
+# yaml-language-server: $schema=../../../_schema/c4.schema.json
+deployments:
+  - id: staging
+    name: Staging Environment
+    description: Pre-production environment for testing
+    nodes:
+      - id: aws-staging
+        name: AWS Cloud (Staging)
+        technology: AWS
+        properties:
+          region: us-east-1
+          environment: staging
+        children:
+          - id: vpc-staging
+            name: Staging VPC
+            technology: AWS VPC
+            properties:
+              cidr: 10.10.0.0/16
+            children:
+              - id: k8s-cluster
+                name: EKS Cluster
+                technology: AWS EKS
+                properties:
+                  version: "1.28"
+                  node-count: 5
+                instances:
+                  - container: api-gateway.gateway
+                    replicas: 1
+                  - container: api-gateway.web-app
+                    replicas: 1
+                  - container: api-gateway.admin-app
+                    replicas: 1
+                  - container: api-gateway.auth
+                    replicas: 1
+                  - container: order-service.order-api
+                    replicas: 1
+                  - container: order-service.cart-service
+                    replicas: 1
+                  - container: order-service.order-processor
+                    replicas: 1
+                  - container: inventory-service.inventory-api
+                    replicas: 1
+                  - container: inventory-service.stock-manager
+                    replicas: 1
+                  - container: payment-service.payment-api
+                    replicas: 1
+                  - container: payment-service.payment-processor
+                    replicas: 1
+                  - container: notification-service.notification-api
+                    replicas: 1
+                  - container: notification-service.email-worker
+                    replicas: 1
+                  - container: notification-service.sms-worker
+                    replicas: 1
+
+              - id: data-services
+                name: Data Services
+                technology: AWS Managed Services
+                instances:
+                  - container: order-service.order-db
+                    replicas: 1
+                  - container: inventory-service.inventory-db
+                    replicas: 1
+                  - container: payment-service.payment-db
+                    replicas: 1
+                  - container: order-service.order-cache
+                    replicas: 1
+                  - container: api-gateway.rate-limiter
+                    replicas: 1
+                  - container: inventory-service.inventory-search
+                    replicas: 1
+                  - container: order-service.order-events
+                    replicas: 1
+                  - container: notification-service.notification-queue
+                    replicas: 1
+                  - container: notification-service.template-store
+                    replicas: 1
+                  - container: payment-service.payment-vault
+                    replicas: 1

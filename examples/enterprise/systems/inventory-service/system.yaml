@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=../../../../_schema/c4.schema.json
+systems:
+  - id: inventory-service
+    name: Inventory Service
+    description: Tracks product inventory, stock levels, and warehouse locations
+    tags:
+      - core
+      - domain:inventory
+    properties:
+      team: inventory-team
+      oncall: inventory-oncall@company.com

@@ -1,0 +1,29 @@
+# Binaries
+/c4
+/dist/
+
+# Dependencies
+/vendor/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+
+# Build artifacts
+/frontend/node_modules/
+/frontend/dist/
+
+# Test artifacts
+coverage.out
+*.test
+
+# Layout cache
+.c4/
+
+# Build
+/target/
+/.claude-flow/

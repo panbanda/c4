@@ -1,0 +1,42 @@
+# yaml-language-server: $schema=../../../../_schema/c4.schema.json
+containers:
+  - id: notification-api
+    name: Notification API
+    description: API for sending notifications
+    technology: Python, FastAPI
+    tags:
+      - api
+    properties:
+      port: 8083
+
+  - id: email-worker
+    name: Email Worker
+    description: Processes and sends email notifications
+    technology: Python, Celery
+    tags:
+      - worker
+      - async
+
+  - id: sms-worker
+    name: SMS Worker
+    description: Processes and sends SMS notifications
+    technology: Python, Celery
+    tags:
+      - worker
+      - async
+
+  - id: notification-queue
+    name: Notification Queue
+    description: Message queue for async notification processing
+    technology: RabbitMQ
+    tags:
+      - messaging
+      - queue
+
+  - id: template-store
+    name: Template Store
+    description: Stores notification templates
+    technology: MongoDB
+    tags:
+      - database
+      - document

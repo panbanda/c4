@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Relationship",
+  "description": "A connection between two elements",
+  "type": "object",
+  "required": ["from", "to"],
+  "properties": {
+    "from": {
+      "type": "string",
+      "description": "Source element (dot-path reference)"
+    },
+    "to": {
+      "type": "string",
+      "description": "Target element (dot-path reference)"
+    },
+    "description": {
+      "type": "string",
+      "description": "What is communicated/used"
+    },
+    "technology": {
+      "type": "string",
+      "description": "Protocol, format, mechanism"
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "properties": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

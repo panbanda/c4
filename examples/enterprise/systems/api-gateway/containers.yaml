@@ -1,0 +1,41 @@
+# yaml-language-server: $schema=../../../../_schema/c4.schema.json
+containers:
+  - id: gateway
+    name: Gateway Service
+    description: Routes requests to appropriate microservices
+    technology: Kong, Lua
+    tags:
+      - api
+      - routing
+
+  - id: auth
+    name: Auth Service
+    description: Handles authentication and JWT token management
+    technology: Go, JWT
+    tags:
+      - security
+      - auth
+
+  - id: rate-limiter
+    name: Rate Limiter
+    description: Protects services from excessive requests
+    technology: Redis, Go
+    tags:
+      - security
+      - rate-limiting
+
+  - id: web-app
+    name: Web Application
+    description: Customer-facing e-commerce storefront
+    technology: Next.js, React, TypeScript
+    tags:
+      - frontend
+      - customer-facing
+
+  - id: admin-app
+    name: Admin Dashboard
+    description: Internal administration interface
+    technology: React, TypeScript
+    tags:
+      - frontend
+      - internal

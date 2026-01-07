@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Software System",
+  "description": "A software system that delivers value to users",
+  "type": "object",
+  "required": ["id", "name"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "Unique identifier"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Display name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Purpose and value delivered"
+    },
+    "external": {
+      "type": "boolean",
+      "default": false,
+      "description": "True if this is an external dependency"
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "properties": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

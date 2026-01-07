@@ -1,0 +1,9 @@
+# yaml-language-server: $schema=../../../../_schema/c4.schema.json
+systems:
+  - id: api-gateway
+    name: API Gateway
+    description: Central entry point for all client requests, handles authentication and routing
+    tags:
+      - infrastructure
+      - security
+      - domain:platform

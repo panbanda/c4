@@ -1,0 +1,19 @@
+containers:
+  - id: api
+    name: Order API
+    description: REST API for order operations
+    technology: Go, Chi
+
+  - id: database
+    name: Order Database
+    technology: PostgreSQL 15
+
+relationships:
+  - from: customer
+    to: order-system
+    description: Places orders
+
+  - from: order-system.api
+    to: order-system.database
+    description: Reads and writes order data
+    technology: SQL

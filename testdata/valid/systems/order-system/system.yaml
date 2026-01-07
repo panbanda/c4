@@ -1,0 +1,7 @@
+systems:
+  - id: order-system
+    name: Order Management System
+    description: Handles order lifecycle
+    external: false
+    tags:
+      - core

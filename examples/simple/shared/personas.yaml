@@ -1,0 +1,5 @@
+# yaml-language-server: $schema=../../../_schema/c4.schema.json
+persons:
+  - id: user
+    name: End User
+    description: A person who uses the todo application to manage tasks

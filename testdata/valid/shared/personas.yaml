@@ -1,0 +1,6 @@
+persons:
+  - id: customer
+    name: Customer
+    description: A person who buys products
+    tags:
+      - external

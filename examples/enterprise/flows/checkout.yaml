@@ -1,0 +1,72 @@
+# yaml-language-server: $schema=../../../_schema/c4.schema.json
+flows:
+  - id: checkout-flow
+    name: Checkout Flow
+    description: Complete checkout process from cart to order confirmation
+    tags:
+      - critical-path
+      - customer-facing
+    steps:
+      - seq: 1
+        from: customer
+        to: api-gateway.web-app
+        description: Clicks checkout button
+
+      - seq: 2
+        from: api-gateway.web-app
+        to: api-gateway.gateway
+        description: POST /api/checkout
+        technology: REST, JSON
+
+      - seq: 3
+        from: api-gateway.gateway
+        to: api-gateway.auth
+        description: Validates session token
+        technology: gRPC
+
+      - seq: 4
+        from: api-gateway.gateway
+        to: order-service.cart-service
+        description: Retrieves cart contents
+        technology: gRPC
+
+      - seq: 5
+        from: api-gateway.gateway
+        to: inventory-service.inventory-api
+        description: Checks stock availability
+        technology: gRPC
+
+      - seq: 6
+        from: api-gateway.gateway
+        to: order-service.order-api
+        description: Creates order
+        technology: gRPC
+
+      - seq: 7
+        from: order-service.order-api
+        to: payment-service.payment-api
+        description: Initiates payment
+        technology: gRPC, mTLS
+
+      - seq: 8
+        from: payment-service.payment-processor
+        to: stripe
+        description: Charges card
+        technology: REST, HTTPS
+
+      - seq: 9
+        from: order-service.order-api
+        to: order-service.order-events
+        description: Publishes OrderCreated event
+        technology: Kafka
+
+      - seq: 10
+        from: notification-service.notification-api
+        to: notification-service.email-worker
+        description: Queues confirmation email
+
+      - seq: 11
+        from: notification-service.email-worker
+        to: sendgrid
+        description: Sends order confirmation email
+        technology: REST, HTTPS

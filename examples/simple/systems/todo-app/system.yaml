@@ -1,0 +1,5 @@
+# yaml-language-server: $schema=../../../../_schema/c4.schema.json
+systems:
+  - id: todo-app
+    name: Todo Application
+    description: A simple task management application

@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Component",
+  "description": "A grouping of related functionality within a container",
+  "type": "object",
+  "required": ["id", "name"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string"
+    },
+    "technology": {
+      "type": "string"
+    },
+    "systemId": {
+      "type": "string",
+      "description": "Parent system ID"
+    },
+    "containerId": {
+      "type": "string",
+      "description": "Parent container ID"
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "properties": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=../../../../_schema/c4.schema.json
+containers:
+  - id: web
+    name: Web App
+    description: Single-page application for managing todos
+    technology: React, TypeScript
+
+  - id: api
+    name: API Server
+    description: REST API backend
+    technology: Node.js, Express
+
+  - id: database
+    name: Database
+    description: Stores todos and user data
+    technology: PostgreSQL

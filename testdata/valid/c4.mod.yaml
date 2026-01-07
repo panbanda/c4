@@ -1,0 +1,7 @@
+version: "1.0"
+name: test-workspace
+
+include:
+  - shared/*.yaml
+  - systems/*/system.yaml
+  - systems/*/containers.yaml
