@@ -5,7 +5,7 @@ edition = "2021"
 authors = ["C4 Contributors"]
 description = "C4 architecture visualization tool - parse, visualize, and export C4 models"
 license = "MIT"
-repository = "https://github.com/christophersutton/c4"
+repository = "https://github.com/panbanda/c4"
 
 [[bin]]
 name = "c4"
