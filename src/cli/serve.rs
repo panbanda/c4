@@ -1,6 +1,6 @@
 use super::{CliError, Result};
 use clap::Args;
-use std::path::PathBuf;
+use std::path::Path;
 use std::process::Command;
 
 #[derive(Args, Debug)]
@@ -22,7 +22,7 @@ pub struct ServeArgs {
     pub no_reload: bool,
 }
 
-pub fn run_serve(args: ServeArgs, work_dir: &PathBuf, verbose: bool) -> Result<()> {
+pub fn run_serve(args: ServeArgs, work_dir: &Path, verbose: bool) -> Result<()> {
     if verbose {
         println!("Starting server in {}", work_dir.display());
         println!("Server configuration:");
@@ -121,7 +121,7 @@ mod tests {
             no_reload: false,
         };
 
-        let result = run_serve(args, &dir.path().to_path_buf(), false);
+        let result = run_serve(args, dir.path(), false);
         assert!(result.is_err());
         assert!(result
             .unwrap_err()
@@ -145,7 +145,7 @@ mod tests {
             no_reload: false,
         };
 
-        let result = run_serve(args, &dir.path().to_path_buf(), false);
+        let result = run_serve(args, dir.path(), false);
         assert!(result.is_ok());
     }
 

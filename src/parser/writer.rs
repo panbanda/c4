@@ -121,7 +121,7 @@ impl<'a> Writer<'a> {
     }
 
     fn is_target_element(&self, node: &serde_yaml::Mapping, element_id: &str) -> bool {
-        if let Some(Value::String(id)) = node.get(&Value::String("id".to_string())) {
+        if let Some(Value::String(id)) = node.get(Value::String("id".to_string())) {
             return id == element_id;
         }
         false

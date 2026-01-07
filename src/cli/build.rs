@@ -1,7 +1,7 @@
 use super::{CliError, Result};
 use clap::Args;
 use std::fs;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 #[derive(Args, Debug)]
 pub struct BuildArgs {
@@ -26,7 +26,7 @@ pub struct BuildArgs {
     pub format: String,
 }
 
-pub fn run_build(args: BuildArgs, work_dir: &PathBuf, verbose: bool) -> Result<()> {
+pub fn run_build(args: BuildArgs, work_dir: &Path, verbose: bool) -> Result<()> {
     if verbose {
         println!("Working directory: {}", work_dir.display());
         println!("Output directory: {}", args.output.display());
@@ -89,7 +89,7 @@ pub fn run_build(args: BuildArgs, work_dir: &PathBuf, verbose: bool) -> Result<(
     Ok(())
 }
 
-fn export_html(output_dir: &PathBuf, verbose: bool) -> Result<()> {
+fn export_html(output_dir: &Path, verbose: bool) -> Result<()> {
     if verbose {
         println!("Creating HTML export in {}", output_dir.display());
     }
@@ -110,7 +110,7 @@ fn export_html(output_dir: &PathBuf, verbose: bool) -> Result<()> {
     Ok(())
 }
 
-fn export_json(output_dir: &PathBuf, verbose: bool) -> Result<()> {
+fn export_json(output_dir: &Path, verbose: bool) -> Result<()> {
     if verbose {
         println!("Creating JSON export in {}", output_dir.display());
     }
@@ -123,7 +123,7 @@ fn export_json(output_dir: &PathBuf, verbose: bool) -> Result<()> {
     Ok(())
 }
 
-fn export_images(output_dir: &PathBuf, format: &str, verbose: bool) -> Result<()> {
+fn export_images(output_dir: &Path, format: &str, verbose: bool) -> Result<()> {
     if verbose {
         println!(
             "Creating image export ({}) in {}",
@@ -191,7 +191,7 @@ mod tests {
             format: "png".to_string(),
         };
 
-        let result = run_build(args, &dir.path().to_path_buf(), false);
+        let result = run_build(args, dir.path(), false);
         assert!(result.is_err());
         assert!(result
             .unwrap_err()
@@ -217,7 +217,7 @@ mod tests {
             format: "png".to_string(),
         };
 
-        run_build(args, &dir.path().to_path_buf(), false).unwrap();
+        run_build(args, dir.path(), false).unwrap();
         assert!(output_dir.exists());
     }
 
@@ -239,7 +239,7 @@ mod tests {
             format: "png".to_string(),
         };
 
-        run_build(args, &dir.path().to_path_buf(), false).unwrap();
+        run_build(args, dir.path(), false).unwrap();
 
         assert!(output_dir.join("index.html").exists());
         assert!(output_dir.join("assets").exists());
@@ -263,7 +263,7 @@ mod tests {
             format: "png".to_string(),
         };
 
-        run_build(args, &dir.path().to_path_buf(), false).unwrap();
+        run_build(args, dir.path(), false).unwrap();
 
         assert!(output_dir.join("model.json").exists());
     }
@@ -286,7 +286,7 @@ mod tests {
             format: "png".to_string(),
         };
 
-        run_build(args, &dir.path().to_path_buf(), false).unwrap();
+        run_build(args, dir.path(), false).unwrap();
 
         assert!(output_dir.join("images").exists());
     }
@@ -308,7 +308,7 @@ mod tests {
             format: "invalid".to_string(),
         };
 
-        let result = run_build(args, &dir.path().to_path_buf(), false);
+        let result = run_build(args, dir.path(), false);
         assert!(result.is_err());
         assert!(result
             .unwrap_err()
@@ -334,7 +334,7 @@ mod tests {
             format: "png".to_string(),
         };
 
-        run_build(args, &dir.path().to_path_buf(), false).unwrap();
+        run_build(args, dir.path(), false).unwrap();
         assert!(output_dir.exists());
     }
 
@@ -355,7 +355,7 @@ mod tests {
             format: "png".to_string(),
         };
 
-        run_build(args, &dir.path().to_path_buf(), false).unwrap();
+        run_build(args, dir.path(), false).unwrap();
 
         let output_dir = dir.path().join("dist");
         assert!(output_dir.exists());
@@ -379,7 +379,7 @@ mod tests {
             format: "svg".to_string(),
         };
 
-        run_build(args, &dir.path().to_path_buf(), false).unwrap();
+        run_build(args, dir.path(), false).unwrap();
 
         assert!(output_dir.join("index.html").exists());
         assert!(output_dir.join("model.json").exists());

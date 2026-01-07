@@ -98,7 +98,7 @@ impl BaseElement {
 
     pub fn get_properties(&self) -> &HashMap<String, serde_json::Value> {
         static EMPTY_MAP: once_cell::sync::Lazy<HashMap<String, serde_json::Value>> =
-            once_cell::sync::Lazy::new(|| HashMap::new());
+            once_cell::sync::Lazy::new(HashMap::new);
         self.properties.as_ref().unwrap_or(&EMPTY_MAP)
     }
 }
@@ -864,7 +864,7 @@ mod tests {
     fn test_options_camel_case() {
         let json = r#"{"showMinimap":true}"#;
         let options: Options = serde_json::from_str(json).unwrap();
-        assert_eq!(options.show_minimap, true);
+        assert!(options.show_minimap);
     }
 
     #[test]

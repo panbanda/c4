@@ -1,7 +1,7 @@
 use super::{CliError, Result};
 use clap::Args;
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 #[derive(Args, Debug)]
 pub struct InitArgs {
@@ -17,7 +17,7 @@ pub struct InitArgs {
     pub example: bool,
 }
 
-pub fn run_init(args: InitArgs, work_dir: &PathBuf) -> Result<()> {
+pub fn run_init(args: InitArgs, work_dir: &Path) -> Result<()> {
     let name = args.name.unwrap_or_else(|| "my-architecture".to_string());
 
     let mod_path = work_dir.join("c4.mod.yaml");
@@ -231,7 +231,7 @@ mod tests {
             example: false,
         };
 
-        run_init(args, &dir.path().to_path_buf()).unwrap();
+        run_init(args, dir.path()).unwrap();
 
         let mod_path = dir.path().join("c4.mod.yaml");
         assert!(mod_path.exists());
@@ -250,7 +250,7 @@ mod tests {
             example: false,
         };
 
-        run_init(args, &dir.path().to_path_buf()).unwrap();
+        run_init(args, dir.path()).unwrap();
 
         assert!(dir.path().join("_schema").exists());
         assert!(dir.path().join("shared").exists());
@@ -267,7 +267,7 @@ mod tests {
             example: false,
         };
 
-        run_init(args, &dir.path().to_path_buf()).unwrap();
+        run_init(args, dir.path()).unwrap();
 
         assert!(dir.path().join("_schema").exists());
         assert!(dir.path().join("shared").exists());
@@ -284,7 +284,7 @@ mod tests {
             example: true,
         };
 
-        run_init(args, &dir.path().to_path_buf()).unwrap();
+        run_init(args, dir.path()).unwrap();
 
         assert!(dir.path().join("shared/personas.yaml").exists());
         assert!(dir.path().join("shared/external-systems.yaml").exists());
@@ -309,7 +309,7 @@ mod tests {
             example: false,
         };
 
-        let result = run_init(args, &dir.path().to_path_buf());
+        let result = run_init(args, dir.path());
         assert!(result.is_err());
         assert!(result
             .unwrap_err()
