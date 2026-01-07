@@ -11,11 +11,12 @@ pub use watcher::Watcher;
 
 use axum::{
     extract::{ws::WebSocket, Path, State, WebSocketUpgrade},
-    http::StatusCode,
+    http::{header, StatusCode, Uri},
     response::{IntoResponse, Json, Response},
     routing::{get, put},
     Router,
 };
+use rust_embed::RustEmbed;
 use futures_util::{SinkExt, StreamExt};
 use serde::{Deserialize, Serialize};
 use std::net::SocketAddr;
@@ -46,6 +47,10 @@ impl Default for Config {
         }
     }
 }
+
+#[derive(RustEmbed)]
+#[folder = "src/exporter/static/dist"]
+struct StaticAssets;
 
 #[derive(Clone)]
 pub struct ServerState {
@@ -129,8 +134,32 @@ impl Server {
             )
             .route("/ws", get(handle_websocket))
             .route("/docs/*path", get(handle_docs))
+            .fallback(handle_static)
             .layer(CorsLayer::permissive())
             .with_state(self.state.clone())
+    }
+}
+
+async fn handle_static(uri: Uri) -> Response {
+    let path = uri.path().trim_start_matches('/');
+
+    // Serve the requested file, or fall back to index.html for SPA routing
+    let path = if path.is_empty() { "index.html" } else { path };
+
+    match StaticAssets::get(path) {
+        Some(content) => {
+            let mime = mime_guess::from_path(path).first_or_octet_stream();
+            ([(header::CONTENT_TYPE, mime.as_ref())], content.data).into_response()
+        }
+        None => {
+            // For SPA: serve index.html for any unmatched route
+            match StaticAssets::get("index.html") {
+                Some(content) => {
+                    ([(header::CONTENT_TYPE, "text/html")], content.data).into_response()
+                }
+                None => (StatusCode::NOT_FOUND, "Not Found").into_response(),
+            }
+        }
     }
 }
 
@@ -469,5 +498,28 @@ mod tests {
 
         let server = Server::new(config).unwrap();
         let _router = server.create_router();
+    }
+
+    #[tokio::test]
+    async fn test_root_path_serves_index_html() {
+        use axum::body::Body;
+        use axum::http::Request;
+        use tower::util::ServiceExt;
+
+        let temp_dir = TempDir::new().unwrap();
+        let config = Config {
+            work_dir: temp_dir.path().to_path_buf(),
+            ..Default::default()
+        };
+
+        let server = Server::new(config).unwrap();
+        let router = server.create_router();
+
+        let response = router
+            .oneshot(Request::builder().uri("/").body(Body::empty()).unwrap())
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
     }
 }

@@ -25,7 +25,7 @@ tokio = { version = "1.35", features = ["full"] }
 
 # HTTP server
 axum = { version = "0.7", features = ["ws"] }
-tower = "0.4"
+tower = { version = "0.4", features = ["util"] }
 tower-http = { version = "0.5", features = ["fs", "cors"] }
 
 # WebSocket
@@ -58,6 +58,7 @@ uuid = { version = "1.6", features = ["v4"] }
 
 # Static file embedding
 rust-embed = "8.2"
+mime_guess = "2.0"
 
 [dev-dependencies]
 # Testing

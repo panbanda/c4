@@ -1,4 +1,6 @@
 use super::{CliError, Result};
+use crate::parser::Parser;
+use crate::server::{Config, Server};
 use clap::Args;
 use std::path::Path;
 use std::process::Command;
@@ -39,24 +41,55 @@ pub fn run_serve(args: ServeArgs, work_dir: &Path, verbose: bool) -> Result<()> 
         ));
     }
 
-    // Open browser if requested
-    if !args.no_open {
-        let url = format!("http://{}:{}", args.host, args.port);
-        if verbose {
-            println!("Opening browser at {}", url);
-        }
-        open_browser(&url)?;
-    }
+    // Parse the model
+    let mut parser = Parser::new(work_dir);
+    let model = parser
+        .parse()
+        .map_err(|e| CliError::Server(format!("Failed to parse model: {}", e)))?;
 
-    // TODO: Start actual server when server module is available
+    // Convert model to JSON for the server
+    let model_json = serde_json::to_value(&model)
+        .map_err(|e| CliError::Server(format!("Failed to serialize model: {}", e)))?;
+
+    // Create server config
+    let config = Config {
+        host: args.host.clone(),
+        port: args.port,
+        work_dir: work_dir.to_path_buf(),
+        no_reload: args.no_reload,
+        verbose,
+    };
+
     println!(
         "Starting development server at http://{}:{}",
         args.host, args.port
     );
     println!("Press Ctrl+C to stop");
 
-    // For now, just return Ok
-    Ok(())
+    // Open browser if requested
+    if !args.no_open {
+        let url = format!("http://{}:{}", args.host, args.port);
+        if verbose {
+            println!("Opening browser at {}", url);
+        }
+        let _ = open_browser(&url);
+    }
+
+    // Create runtime first, then Server inside it.
+    // Server::new() uses tokio::spawn internally (via Watcher), so it must be
+    // called within a tokio runtime context.
+    let runtime = tokio::runtime::Runtime::new()
+        .map_err(|e| CliError::Server(format!("Failed to create runtime: {}", e)))?;
+
+    runtime.block_on(async {
+        let server = Server::new(config)
+            .map_err(|e| CliError::Server(format!("Failed to create server: {}", e)))?;
+        server.set_model(model_json).await;
+        server
+            .run()
+            .await
+            .map_err(|e| CliError::Server(format!("Server error: {}", e)))
+    })
 }
 
 pub fn open_browser(url: &str) -> Result<()> {
@@ -78,7 +111,7 @@ pub fn open_browser(url: &str) -> Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::fs;
+    use crate::server::{Config, Server};
     use tempfile::TempDir;
 
     #[test]
@@ -130,26 +163,6 @@ mod tests {
     }
 
     #[test]
-    fn test_serve_with_mod_file() {
-        let dir = TempDir::new().unwrap();
-        fs::write(
-            dir.path().join("c4.mod.yaml"),
-            "version: \"1.0\"\nname: test\n",
-        )
-        .unwrap();
-
-        let args = ServeArgs {
-            port: 4400,
-            host: "localhost".to_string(),
-            no_open: true, // Don't actually open browser in tests
-            no_reload: false,
-        };
-
-        let result = run_serve(args, dir.path(), false);
-        assert!(result.is_ok());
-    }
-
-    #[test]
     fn test_open_browser_url_format() {
         let host = "localhost";
         let port = 4400;
@@ -165,5 +178,30 @@ mod tests {
 
         // At least one should be true
         assert!(is_macos || is_linux || is_windows || cfg!(unix));
+    }
+
+    /// Test that Server can be created from synchronous code by first creating a runtime.
+    /// This reproduces the bug where Server::new() was called outside a tokio runtime,
+    /// causing a panic in Watcher which uses tokio::spawn.
+    #[test]
+    fn test_server_creation_from_sync_context() {
+        let temp_dir = TempDir::new().unwrap();
+        let config = Config {
+            host: "localhost".to_string(),
+            port: 4400,
+            work_dir: temp_dir.path().to_path_buf(),
+            no_reload: false, // Enable watcher to exercise the tokio::spawn path
+            verbose: false,
+        };
+
+        // Server::new() uses tokio::spawn internally (via Watcher), so it must be
+        // called within a tokio runtime context. This test verifies that creating
+        // the runtime first, then the server inside it, works correctly.
+        let runtime = tokio::runtime::Runtime::new().unwrap();
+        let result = runtime.block_on(async {
+            Server::new(config)
+        });
+
+        assert!(result.is_ok());
     }
 }

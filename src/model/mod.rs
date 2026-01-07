@@ -2,6 +2,7 @@ pub mod types;
 
 pub use types::*;
 
+use serde::Serialize;
 use std::collections::HashMap;
 use std::error::Error as StdError;
 use std::fmt;
@@ -22,7 +23,7 @@ impl fmt::Display for ModelError {
 impl StdError for ModelError {}
 
 /// Model represents the complete C4 architecture model
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize)]
 pub struct Model {
     // Primary storage
     pub persons: Vec<Person>,
@@ -35,11 +36,17 @@ pub struct Model {
     pub options: Options,
 
     // Indexes for fast lookup (not serialized)
+    #[serde(skip)]
     elements_by_id: HashMap<String, usize>,
+    #[serde(skip)]
     elements_by_type: HashMap<ElementType, Vec<String>>,
+    #[serde(skip)]
     elements_by_tag: HashMap<String, Vec<String>>,
+    #[serde(skip)]
     children_by_id: HashMap<String, Vec<String>>,
+    #[serde(skip)]
     outgoing_rels: HashMap<String, Vec<usize>>,
+    #[serde(skip)]
     incoming_rels: HashMap<String, Vec<usize>>,
 }
 

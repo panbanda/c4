@@ -192,11 +192,27 @@ mod tests {
 
         export_html(&model, output_dir).unwrap();
 
-        let css_file = temp_dir.path().join("assets").join("index.css");
-        assert!(css_file.exists());
+        let assets_dir = temp_dir.path().join("assets");
+        let entries: Vec<_> = fs::read_dir(&assets_dir).unwrap().collect();
 
-        let js_file = temp_dir.path().join("assets").join("index.js");
-        assert!(js_file.exists());
+        // Check that CSS and JS files exist (Vite uses hashed filenames)
+        let has_css = entries.iter().any(|e| {
+            e.as_ref()
+                .unwrap()
+                .path()
+                .extension()
+                .map_or(false, |ext| ext == "css")
+        });
+        let has_js = entries.iter().any(|e| {
+            e.as_ref()
+                .unwrap()
+                .path()
+                .extension()
+                .map_or(false, |ext| ext == "js")
+        });
+
+        assert!(has_css, "Expected at least one CSS file in assets/");
+        assert!(has_js, "Expected at least one JS file in assets/");
     }
 
     #[test]
