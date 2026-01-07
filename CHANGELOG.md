@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/panbanda/c4/compare/c4-v0.1.2...c4-v0.1.3) (2026-01-07)
+
+
+### Bug Fixes
+
+* **ci:** generate homebrew formula manually like omen ([ae863ac](https://github.com/panbanda/c4/commit/ae863accbb1e16789d10854662353353367234ae))
+
 ## [0.1.2](https://github.com/panbanda/c4/compare/c4-v0.1.1...c4-v0.1.2) (2026-01-07)
 
 
