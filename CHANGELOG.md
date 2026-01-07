@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/panbanda/c4/compare/c4-v0.1.1...c4-v0.1.2) (2026-01-07)
+
+
+### Bug Fixes
+
+* **ci:** use correct homebrew token secret name ([240b852](https://github.com/panbanda/c4/commit/240b8523ae2880709989d3ce5f3f7887aebd86a6))
+
 ## [0.1.1](https://github.com/panbanda/c4/compare/c4-v0.1.0...c4-v0.1.1) (2026-01-07)
 
 
