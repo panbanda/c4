@@ -2,6 +2,7 @@ use clap::Args;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use super::{CliError, Result};
+use crate::parser::{Parser, Resolver};
 
 #[derive(Args, Debug)]
 pub struct ValidateArgs {
@@ -99,14 +100,64 @@ pub fn run_validate(args: ValidateArgs, work_dir: &PathBuf, verbose: bool) -> Re
     Ok(())
 }
 
-fn validate_workspace(_work_dir: &PathBuf, _args: &ValidateArgs) -> Result<ValidationResult> {
-    // TODO: Implement actual validation when parser module is available
-    // For now, return a basic successful result
+fn validate_workspace(work_dir: &PathBuf, _args: &ValidateArgs) -> Result<ValidationResult> {
+    let mut parser = Parser::new(work_dir);
+
+    let model = match parser.parse() {
+        Ok(m) => m,
+        Err(e) => {
+            let mut errors = vec![ValidationError {
+                message: e.to_string(),
+                file: None,
+                line: None,
+            }];
+
+            // Include individual parse errors
+            for err in parser.errors() {
+                errors.push(ValidationError {
+                    message: err.to_string(),
+                    file: None,
+                    line: None,
+                });
+            }
+
+            return Ok(ValidationResult {
+                valid: false,
+                errors,
+                warnings: vec![],
+                stats: ValidationStats::default(),
+            });
+        }
+    };
+
+    // Run resolver to check references
+    let mut resolver = Resolver::new(&model);
+    let resolution_errors = resolver.resolve();
+
+    let errors: Vec<ValidationError> = resolution_errors
+        .iter()
+        .map(|e| ValidationError {
+            message: e.message.clone(),
+            file: if e.file.is_empty() { None } else { Some(e.file.clone()) },
+            line: if e.line == 0 { None } else { Some(e.line) },
+        })
+        .collect();
+
+    let stats = ValidationStats {
+        persons: model.persons.len(),
+        systems: model.systems.len(),
+        containers: model.containers.len(),
+        components: model.components.len(),
+        relationships: model.relationships.len(),
+        flows: model.flows.len(),
+        deployments: model.deployments.len(),
+    };
+
     Ok(ValidationResult {
-        valid: true,
-        errors: vec![],
+        valid: errors.is_empty(),
+        errors,
         warnings: vec![],
-        stats: ValidationStats::default(),
+        stats,
     })
 }
 
