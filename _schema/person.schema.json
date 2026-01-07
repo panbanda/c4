@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://c4model.dev/schema/person.schema.json",
+  "title": "Person",
+  "description": "A human user of the software system",
+  "type": "object",
+  "required": ["id", "name"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "Unique identifier (lowercase, alphanumeric, hyphens)"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Display name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Role, responsibilities, goals"
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Classification labels"
+    },
+    "properties": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Extensible metadata"
+    }
+  },
+  "additionalProperties": false
+}

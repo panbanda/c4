@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+
+    color-scheme: dark;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    --color-bg: #1a1a1a;
+    --color-surface: #242424;
+    --color-border: #333333;
+    --color-hover: #2a2a2a;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: rgb(226 232 240); /* slate-200 */
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+  }
+
+  #root {
+    width: 100%;
+    height: 100vh;
+  }
+}
+
+@layer components {
+  @keyframes flowDash {
+    from {
+      stroke-dashoffset: 24;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  .flow-edge-active {
+    animation: flowDash 0.5s linear infinite;
+  }
+
+  @keyframes nodeEntry {
+    from {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes nodeExit {
+    from {
+      opacity: 1;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+  }
+
+  .react-flow__node {
+    animation: nodeEntry 0.3s ease-out;
+  }
+
+  .react-flow__node.dimmed {
+    opacity: 0.3;
+    transition: opacity 0.2s ease-in-out;
+  }
+
+  .react-flow__node.highlighted {
+    opacity: 1;
+    transition: opacity 0.2s ease-in-out;
+  }
+
+  .react-flow__edge {
+    transition: stroke 0.3s ease, opacity 0.3s ease;
+  }
+
+}
+
+/* Controls styling to match ViewModeSwitcher dropdown - outside @layer for higher specificity */
+.react-flow__controls {
+  background: rgb(30 41 59) !important; /* slate-800 */
+  border: 1px solid rgb(71 85 105) !important; /* slate-600 */
+  border-radius: 0.5rem !important;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1) !important;
+  overflow: hidden;
+  bottom: 12px !important;
+  left: 12px !important;
+  right: auto !important;
+}
+
+.react-flow__controls-button {
+  background: rgb(30 41 59) !important; /* slate-800 */
+  border: none !important;
+  border-bottom: 1px solid rgb(51 65 85) !important; /* slate-700 */
+  width: 36px !important;
+  height: 36px !important;
+  padding: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 150ms ease-out;
+}
+
+.react-flow__controls-button:last-child {
+  border-bottom: none !important;
+}
+
+.react-flow__controls-button:hover {
+  background: rgb(51 65 85) !important; /* slate-700 */
+}
+
+.react-flow__controls-button svg {
+  fill: rgb(203 213 225) !important; /* slate-300 */
+  width: 16px !important;
+  height: 16px !important;
+}
+
+.react-flow__controls-button:hover svg {
+  fill: rgb(241 245 249) !important; /* slate-100 */
+}
