@@ -27,13 +27,11 @@ impl<'a> Writer<'a> {
         let data = fs::read_to_string(&file_path)
             .with_context(|| format!("Failed to read file {:?}", file_path))?;
 
-        let mut root: Value = serde_yaml::from_str(&data)
-            .context("Failed to parse YAML")?;
+        let mut root: Value = serde_yaml::from_str(&data).context("Failed to parse YAML")?;
 
         self.update_in_ast(&mut root, element_id, element_type, &updates)?;
 
-        let output = serde_yaml::to_string(&root)
-            .context("Failed to serialize YAML")?;
+        let output = serde_yaml::to_string(&root).context("Failed to serialize YAML")?;
 
         fs::write(&file_path, output)
             .with_context(|| format!("Failed to write file {:?}", file_path))?;
@@ -46,7 +44,9 @@ impl<'a> Writer<'a> {
         element_id: &str,
         element_type: ElementType,
     ) -> Result<PathBuf> {
-        let mod_file = self.parser.get_mod_file()
+        let mod_file = self
+            .parser
+            .get_mod_file()
             .ok_or_else(|| anyhow::anyhow!("parser not initialized"))?;
 
         let collection_key = match element_type {
@@ -69,7 +69,10 @@ impl<'a> Writer<'a> {
             }
         }
 
-        Err(anyhow::anyhow!("element {} not found in any file", element_id))
+        Err(anyhow::anyhow!(
+            "element {} not found in any file",
+            element_id
+        ))
     }
 
     fn contains_element(&self, df: &DataFile, element_id: &str, collection_key: &str) -> bool {
@@ -96,10 +99,12 @@ impl<'a> Writer<'a> {
             ElementType::Component => "components",
         };
 
-        let mapping = root.as_mapping_mut()
+        let mapping = root
+            .as_mapping_mut()
             .ok_or_else(|| anyhow::anyhow!("expected mapping at root"))?;
 
-        let collection = mapping.get_mut(collection_key)
+        let collection = mapping
+            .get_mut(collection_key)
             .and_then(|v| v.as_sequence_mut())
             .ok_or_else(|| anyhow::anyhow!("collection {} not found", collection_key))?;
 
@@ -137,8 +142,8 @@ impl<'a> Writer<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use tempfile::TempDir;
     use std::fs;
+    use tempfile::TempDir;
 
     fn create_test_workspace() -> TempDir {
         let temp = TempDir::new().unwrap();
@@ -182,7 +187,9 @@ systems:
         parser.parse().unwrap();
 
         let writer = Writer::new(&parser);
-        let file_path = writer.find_element_file("user", ElementType::Person).unwrap();
+        let file_path = writer
+            .find_element_file("user", ElementType::Person)
+            .unwrap();
         assert!(file_path.ends_with("data/model.yaml"));
     }
 
@@ -207,7 +214,7 @@ systems:
         let mut updates = HashMap::new();
         updates.insert(
             "description".to_string(),
-            Value::String("Updated description".to_string())
+            Value::String("Updated description".to_string()),
         );
 
         let result = writer.update_element("user", ElementType::Person, updates);
@@ -227,7 +234,7 @@ systems:
         let mut updates = HashMap::new();
         updates.insert(
             "url".to_string(),
-            Value::String("https://example.com".to_string())
+            Value::String("https://example.com".to_string()),
         );
 
         let result = writer.update_element("api", ElementType::System, updates);
@@ -248,10 +255,12 @@ systems:
         let mut updates = HashMap::new();
         updates.insert(
             "name".to_string(),
-            Value::String("Updated Name".to_string())
+            Value::String("Updated Name".to_string()),
         );
 
-        writer.update_element("user", ElementType::Person, updates).unwrap();
+        writer
+            .update_element("user", ElementType::Person, updates)
+            .unwrap();
 
         let updated = fs::read_to_string(temp.path().join("data/model.yaml")).unwrap();
 
@@ -268,12 +277,11 @@ systems:
 
         let writer = Writer::new(&parser);
         let mut updates = HashMap::new();
-        updates.insert(
-            "name".to_string(),
-            Value::String("Updated".to_string())
-        );
+        updates.insert("name".to_string(), Value::String("Updated".to_string()));
 
-        writer.update_element("user", ElementType::Person, updates).unwrap();
+        writer
+            .update_element("user", ElementType::Person, updates)
+            .unwrap();
 
         let content = fs::read_to_string(temp.path().join("data/model.yaml")).unwrap();
         let _: Value = serde_yaml::from_str(&content).unwrap();

@@ -95,7 +95,10 @@ options:
         let mod_file: ModFile = serde_yaml::from_str(yaml).unwrap();
         assert_eq!(mod_file.version, "1.0");
         assert_eq!(mod_file.name, "test-model");
-        assert_eq!(mod_file.schema, Some("https://example.com/schema".to_string()));
+        assert_eq!(
+            mod_file.schema,
+            Some("https://example.com/schema".to_string())
+        );
         assert_eq!(mod_file.include.len(), 2);
         assert_eq!(mod_file.include[0], "data/*.yaml");
         assert!(mod_file.imports.contains_key("external"));
@@ -275,8 +278,8 @@ deployments:
 
     #[test]
     fn test_file_context_with_system_id() {
-        let ctx = FileContext::new("/path/to/file.yaml".to_string())
-            .with_system_id("api".to_string());
+        let ctx =
+            FileContext::new("/path/to/file.yaml".to_string()).with_system_id("api".to_string());
         assert_eq!(ctx.system_id, "api");
     }
 

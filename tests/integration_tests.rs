@@ -1,9 +1,7 @@
 //! Integration tests for the C4 Rust implementation
 //! Tests the full parsing, validation, and export pipeline
 
-use c4::model::{
-    BaseElement, Component, Container, Element, ElementType, Person, Technology,
-};
+use c4::model::{BaseElement, Component, Container, Element, ElementType, Person, Technology};
 use c4::parser::{Parser, Resolver};
 use std::fs;
 use tempfile::TempDir;

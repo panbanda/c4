@@ -54,7 +54,9 @@ impl Model {
             relationships: Vec::new(),
             flows: Vec::new(),
             deployments: Vec::new(),
-            options: Options { show_minimap: false },
+            options: Options {
+                show_minimap: false,
+            },
             elements_by_id: HashMap::new(),
             elements_by_type: HashMap::new(),
             elements_by_tag: HashMap::new(),
@@ -183,7 +185,6 @@ impl Model {
 
         Ok(())
     }
-
 
     /// Returns an element by its full path
     pub fn get_element(&self, path: &str) -> Option<&dyn Element> {
@@ -430,8 +431,12 @@ mod tests {
         let mut model = Model::new();
         model.systems.push(create_test_system("sys1"));
         model.containers.push(create_test_container("sys1", "web"));
-        model.components.push(create_test_component("sys1", "web", "controller"));
-        model.components.push(create_test_component("sys1", "web", "service"));
+        model
+            .components
+            .push(create_test_component("sys1", "web", "controller"));
+        model
+            .components
+            .push(create_test_component("sys1", "web", "service"));
 
         let result = model.build_indexes();
         assert!(result.is_ok());
@@ -556,7 +561,9 @@ mod tests {
         let mut model = Model::new();
         model.systems.push(create_test_system("sys1"));
         model.containers.push(create_test_container("sys1", "web"));
-        model.components.push(create_test_component("sys1", "web", "controller"));
+        model
+            .components
+            .push(create_test_component("sys1", "web", "controller"));
         model.build_indexes().unwrap();
 
         let element = model.get_element("sys1.web.controller");
@@ -653,8 +660,12 @@ mod tests {
         let mut model = Model::new();
         model.systems.push(create_test_system("sys1"));
         model.containers.push(create_test_container("sys1", "web"));
-        model.components.push(create_test_component("sys1", "web", "controller"));
-        model.components.push(create_test_component("sys1", "web", "service"));
+        model
+            .components
+            .push(create_test_component("sys1", "web", "controller"));
+        model
+            .components
+            .push(create_test_component("sys1", "web", "service"));
         model.build_indexes().unwrap();
 
         let children = model.get_children("sys1.web");
@@ -754,7 +765,9 @@ mod tests {
         model.persons.push(create_test_person("user1"));
         model.systems.push(create_test_system("sys1"));
         model.containers.push(create_test_container("sys1", "web"));
-        model.components.push(create_test_component("sys1", "web", "controller"));
+        model
+            .components
+            .push(create_test_component("sys1", "web", "controller"));
         model.build_indexes().unwrap();
 
         let all = model.all_elements();
@@ -798,7 +811,11 @@ mod tests {
     fn test_multiple_tags_indexing() {
         let mut model = Model::new();
         let mut person = create_test_person("user1");
-        person.base.tags = Some(vec!["tag1".to_string(), "tag2".to_string(), "tag3".to_string()]);
+        person.base.tags = Some(vec![
+            "tag1".to_string(),
+            "tag2".to_string(),
+            "tag3".to_string(),
+        ]);
         model.persons.push(person);
         model.build_indexes().unwrap();
 
@@ -815,9 +832,15 @@ mod tests {
         model.systems.push(create_test_system("sys1"));
         model.containers.push(create_test_container("sys1", "web"));
         model.containers.push(create_test_container("sys1", "api"));
-        model.components.push(create_test_component("sys1", "web", "controller"));
-        model.components.push(create_test_component("sys1", "web", "view"));
-        model.components.push(create_test_component("sys1", "api", "handler"));
+        model
+            .components
+            .push(create_test_component("sys1", "web", "controller"));
+        model
+            .components
+            .push(create_test_component("sys1", "web", "view"));
+        model
+            .components
+            .push(create_test_component("sys1", "api", "handler"));
 
         model.build_indexes().unwrap();
 

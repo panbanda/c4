@@ -1,7 +1,7 @@
+use super::{CliError, Result};
 use clap::Args;
 use std::fs;
 use std::path::PathBuf;
-use super::{CliError, Result};
 
 #[derive(Args, Debug)]
 pub struct BuildArgs {
@@ -36,15 +36,16 @@ pub fn run_build(args: BuildArgs, work_dir: &PathBuf, verbose: bool) -> Result<(
     let mod_path = work_dir.join("c4.mod.yaml");
     if !mod_path.exists() {
         return Err(CliError::Build(
-            "c4.mod.yaml not found. Run 'c4 init' to initialize a workspace.".to_string()
+            "c4.mod.yaml not found. Run 'c4 init' to initialize a workspace.".to_string(),
         ));
     }
 
     // Validate image format
     if args.images && args.format != "png" && args.format != "svg" {
-        return Err(CliError::Build(
-            format!("invalid image format '{}'. Must be 'png' or 'svg'", args.format)
-        ));
+        return Err(CliError::Build(format!(
+            "invalid image format '{}'. Must be 'png' or 'svg'",
+            args.format
+        )));
     }
 
     // Create output directory
@@ -96,8 +97,11 @@ fn export_html(output_dir: &PathBuf, verbose: bool) -> Result<()> {
     // TODO: Implement actual HTML export when exporter module is available
     // For now, create placeholder files
     let index_path = output_dir.join("index.html");
-    fs::write(&index_path, "<!DOCTYPE html><html><body>C4 Visualization</body></html>")
-        .map_err(|e| CliError::Build(format!("failed to write index.html: {}", e)))?;
+    fs::write(
+        &index_path,
+        "<!DOCTYPE html><html><body>C4 Visualization</body></html>",
+    )
+    .map_err(|e| CliError::Build(format!("failed to write index.html: {}", e)))?;
 
     let assets_dir = output_dir.join("assets");
     fs::create_dir_all(&assets_dir)
@@ -121,7 +125,11 @@ fn export_json(output_dir: &PathBuf, verbose: bool) -> Result<()> {
 
 fn export_images(output_dir: &PathBuf, format: &str, verbose: bool) -> Result<()> {
     if verbose {
-        println!("Creating image export ({}) in {}", format, output_dir.display());
+        println!(
+            "Creating image export ({}) in {}",
+            format,
+            output_dir.display()
+        );
     }
 
     // TODO: Implement actual image export when exporter module is available
@@ -185,13 +193,20 @@ mod tests {
 
         let result = run_build(args, &dir.path().to_path_buf(), false);
         assert!(result.is_err());
-        assert!(result.unwrap_err().to_string().contains("c4.mod.yaml not found"));
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("c4.mod.yaml not found"));
     }
 
     #[test]
     fn test_build_creates_output_dir() {
         let dir = TempDir::new().unwrap();
-        fs::write(dir.path().join("c4.mod.yaml"), "version: \"1.0\"\nname: test\n").unwrap();
+        fs::write(
+            dir.path().join("c4.mod.yaml"),
+            "version: \"1.0\"\nname: test\n",
+        )
+        .unwrap();
 
         let output_dir = dir.path().join("dist");
         let args = BuildArgs {
@@ -209,7 +224,11 @@ mod tests {
     #[test]
     fn test_build_html_output() {
         let dir = TempDir::new().unwrap();
-        fs::write(dir.path().join("c4.mod.yaml"), "version: \"1.0\"\nname: test\n").unwrap();
+        fs::write(
+            dir.path().join("c4.mod.yaml"),
+            "version: \"1.0\"\nname: test\n",
+        )
+        .unwrap();
 
         let output_dir = dir.path().join("dist");
         let args = BuildArgs {
@@ -229,7 +248,11 @@ mod tests {
     #[test]
     fn test_build_json_output() {
         let dir = TempDir::new().unwrap();
-        fs::write(dir.path().join("c4.mod.yaml"), "version: \"1.0\"\nname: test\n").unwrap();
+        fs::write(
+            dir.path().join("c4.mod.yaml"),
+            "version: \"1.0\"\nname: test\n",
+        )
+        .unwrap();
 
         let output_dir = dir.path().join("dist");
         let args = BuildArgs {
@@ -248,7 +271,11 @@ mod tests {
     #[test]
     fn test_build_images_output() {
         let dir = TempDir::new().unwrap();
-        fs::write(dir.path().join("c4.mod.yaml"), "version: \"1.0\"\nname: test\n").unwrap();
+        fs::write(
+            dir.path().join("c4.mod.yaml"),
+            "version: \"1.0\"\nname: test\n",
+        )
+        .unwrap();
 
         let output_dir = dir.path().join("dist");
         let args = BuildArgs {
@@ -267,7 +294,11 @@ mod tests {
     #[test]
     fn test_build_invalid_image_format() {
         let dir = TempDir::new().unwrap();
-        fs::write(dir.path().join("c4.mod.yaml"), "version: \"1.0\"\nname: test\n").unwrap();
+        fs::write(
+            dir.path().join("c4.mod.yaml"),
+            "version: \"1.0\"\nname: test\n",
+        )
+        .unwrap();
 
         let args = BuildArgs {
             output: PathBuf::from("./dist"),
@@ -279,13 +310,20 @@ mod tests {
 
         let result = run_build(args, &dir.path().to_path_buf(), false);
         assert!(result.is_err());
-        assert!(result.unwrap_err().to_string().contains("invalid image format"));
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("invalid image format"));
     }
 
     #[test]
     fn test_build_absolute_path() {
         let dir = TempDir::new().unwrap();
-        fs::write(dir.path().join("c4.mod.yaml"), "version: \"1.0\"\nname: test\n").unwrap();
+        fs::write(
+            dir.path().join("c4.mod.yaml"),
+            "version: \"1.0\"\nname: test\n",
+        )
+        .unwrap();
 
         let output_dir = dir.path().join("output");
         let args = BuildArgs {
@@ -303,7 +341,11 @@ mod tests {
     #[test]
     fn test_build_relative_path() {
         let dir = TempDir::new().unwrap();
-        fs::write(dir.path().join("c4.mod.yaml"), "version: \"1.0\"\nname: test\n").unwrap();
+        fs::write(
+            dir.path().join("c4.mod.yaml"),
+            "version: \"1.0\"\nname: test\n",
+        )
+        .unwrap();
 
         let args = BuildArgs {
             output: PathBuf::from("./dist"),
@@ -322,7 +364,11 @@ mod tests {
     #[test]
     fn test_build_multiple_formats() {
         let dir = TempDir::new().unwrap();
-        fs::write(dir.path().join("c4.mod.yaml"), "version: \"1.0\"\nname: test\n").unwrap();
+        fs::write(
+            dir.path().join("c4.mod.yaml"),
+            "version: \"1.0\"\nname: test\n",
+        )
+        .unwrap();
 
         let output_dir = dir.path().join("dist");
         let args = BuildArgs {

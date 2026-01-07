@@ -39,12 +39,17 @@ impl Parser {
         }
 
         if !self.errors.is_empty() {
-            return Err(anyhow::anyhow!("Parse errors: {} errors encountered", self.errors.len()));
+            return Err(anyhow::anyhow!(
+                "Parse errors: {} errors encountered",
+                self.errors.len()
+            ));
         }
 
         let options = self.mod_file.as_ref().unwrap().options.clone();
         self.model.options = options;
-        self.model.build_indexes().map_err(|e| anyhow::anyhow!("{}", e))?;
+        self.model
+            .build_indexes()
+            .map_err(|e| anyhow::anyhow!("{}", e))?;
 
         let mut parsed_model = model::Model::new();
         std::mem::swap(&mut self.model, &mut parsed_model);
@@ -55,8 +60,7 @@ impl Parser {
         let data = fs::read_to_string(path)
             .with_context(|| format!("Failed to read mod file: {:?}", path))?;
 
-        let mod_file: ModFile = serde_yaml::from_str(&data)
-            .context("Invalid YAML in mod file")?;
+        let mod_file: ModFile = serde_yaml::from_str(&data).context("Invalid YAML in mod file")?;
 
         if mod_file.version.is_empty() {
             return Err(anyhow::anyhow!("Missing version field in mod file"));
@@ -99,7 +103,8 @@ impl Parser {
             if container.system_id.is_empty() {
                 self.errors.push(anyhow::anyhow!(
                     "{:?}: container {:?} has no system context",
-                    path, container.base.id
+                    path,
+                    container.base.id
                 ));
                 continue;
             }
@@ -118,7 +123,8 @@ impl Parser {
             if component.system_id.is_empty() || component.container_id.is_empty() {
                 self.errors.push(anyhow::anyhow!(
                     "{:?}: component {:?} missing system/container context",
-                    path, component.base.id
+                    path,
+                    component.base.id
                 ));
                 continue;
             }

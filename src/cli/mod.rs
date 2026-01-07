@@ -1,7 +1,7 @@
-pub mod init;
-pub mod validate;
-pub mod serve;
 pub mod build;
+pub mod init;
+pub mod serve;
+pub mod validate;
 
 use clap::{Parser, Subcommand};
 use std::path::PathBuf;
@@ -30,10 +30,12 @@ pub type Result<T> = std::result::Result<T, CliError>;
 #[derive(Parser, Debug)]
 #[command(name = "c4")]
 #[command(author, version, about = "C4 architecture visualization tool", long_about = None)]
-#[command(long_about = "c4 is a CLI tool for parsing, visualizing, and exporting\n\
+#[command(
+    long_about = "c4 is a CLI tool for parsing, visualizing, and exporting\n\
                          C4 architecture models defined in YAML.\n\n\
                          It provides an interactive web-based visualization with drill-down\n\
-                         navigation, flow animations, and export to static HTML and images.")]
+                         navigation, flow animations, and export to static HTML and images."
+)]
 pub struct Cli {
     /// Working directory
     #[arg(short = 'C', long = "dir", default_value = ".", global = true)]
@@ -70,11 +72,17 @@ pub fn run() -> Result<()> {
 
     match cli.command {
         Commands::Init(args) => init::run_init(args, &get_work_dir(&cli.work_dir)?),
-        Commands::Validate(args) => validate::run_validate(args, &get_work_dir(&cli.work_dir)?, cli.verbose),
+        Commands::Validate(args) => {
+            validate::run_validate(args, &get_work_dir(&cli.work_dir)?, cli.verbose)
+        }
         Commands::Serve(args) => serve::run_serve(args, &get_work_dir(&cli.work_dir)?, cli.verbose),
         Commands::Build(args) => build::run_build(args, &get_work_dir(&cli.work_dir)?, cli.verbose),
         Commands::Version => {
-            println!("c4 version {} ({})", env!("CARGO_PKG_VERSION"), env!("CARGO_PKG_VERSION"));
+            println!(
+                "c4 version {} ({})",
+                env!("CARGO_PKG_VERSION"),
+                env!("CARGO_PKG_VERSION")
+            );
             Ok(())
         }
     }

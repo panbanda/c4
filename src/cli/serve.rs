@@ -1,7 +1,7 @@
+use super::{CliError, Result};
 use clap::Args;
 use std::path::PathBuf;
 use std::process::Command;
-use super::{CliError, Result};
 
 #[derive(Args, Debug)]
 pub struct ServeArgs {
@@ -35,7 +35,7 @@ pub fn run_serve(args: ServeArgs, work_dir: &PathBuf, verbose: bool) -> Result<(
     let mod_path = work_dir.join("c4.mod.yaml");
     if !mod_path.exists() {
         return Err(CliError::Server(
-            "c4.mod.yaml not found. Run 'c4 init' to initialize a workspace.".to_string()
+            "c4.mod.yaml not found. Run 'c4 init' to initialize a workspace.".to_string(),
         ));
     }
 
@@ -49,7 +49,10 @@ pub fn run_serve(args: ServeArgs, work_dir: &PathBuf, verbose: bool) -> Result<(
     }
 
     // TODO: Start actual server when server module is available
-    println!("Starting development server at http://{}:{}", args.host, args.port);
+    println!(
+        "Starting development server at http://{}:{}",
+        args.host, args.port
+    );
     println!("Press Ctrl+C to stop");
 
     // For now, just return Ok
@@ -58,17 +61,11 @@ pub fn run_serve(args: ServeArgs, work_dir: &PathBuf, verbose: bool) -> Result<(
 
 pub fn open_browser(url: &str) -> Result<()> {
     let result = if cfg!(target_os = "macos") {
-        Command::new("open")
-            .arg(url)
-            .spawn()
+        Command::new("open").arg(url).spawn()
     } else if cfg!(target_os = "linux") {
-        Command::new("xdg-open")
-            .arg(url)
-            .spawn()
+        Command::new("xdg-open").arg(url).spawn()
     } else if cfg!(target_os = "windows") {
-        Command::new("cmd")
-            .args(["/c", "start", url])
-            .spawn()
+        Command::new("cmd").args(["/c", "start", url]).spawn()
     } else {
         return Ok(()); // Unsupported platform, silently skip
     };
@@ -126,13 +123,20 @@ mod tests {
 
         let result = run_serve(args, &dir.path().to_path_buf(), false);
         assert!(result.is_err());
-        assert!(result.unwrap_err().to_string().contains("c4.mod.yaml not found"));
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("c4.mod.yaml not found"));
     }
 
     #[test]
     fn test_serve_with_mod_file() {
         let dir = TempDir::new().unwrap();
-        fs::write(dir.path().join("c4.mod.yaml"), "version: \"1.0\"\nname: test\n").unwrap();
+        fs::write(
+            dir.path().join("c4.mod.yaml"),
+            "version: \"1.0\"\nname: test\n",
+        )
+        .unwrap();
 
         let args = ServeArgs {
             port: 4400,

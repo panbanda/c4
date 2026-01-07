@@ -1,6 +1,6 @@
 pub mod html;
-pub mod json;
 pub mod images;
+pub mod json;
 
 use std::fs;
 use std::path::Path;

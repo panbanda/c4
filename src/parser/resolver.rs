@@ -12,7 +12,11 @@ pub struct ValidationError {
 impl fmt::Display for ValidationError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         if !self.file.is_empty() {
-            write!(f, "{}:{}: {}: {}", self.file, self.line, self.path, self.message)
+            write!(
+                f,
+                "{}:{}: {}: {}",
+                self.file, self.line, self.path, self.message
+            )
         } else {
             write!(f, "{}: {}", self.path, self.message)
         }
@@ -48,12 +52,9 @@ impl<'a> Resolver<'a> {
             for step in &flow.steps {
                 self.validate_ref(
                     &step.from,
-                    &format!("flow.{}.step.{}.from", flow.id, step.seq)
+                    &format!("flow.{}.step.{}.from", flow.id, step.seq),
                 );
-                self.validate_ref(
-                    &step.to,
-                    &format!("flow.{}.step.{}.to", flow.id, step.seq)
-                );
+                self.validate_ref(&step.to, &format!("flow.{}.step.{}.to", flow.id, step.seq));
             }
         }
 
@@ -69,7 +70,10 @@ impl<'a> Resolver<'a> {
             if self.model.get_element(&container.system_id).is_none() {
                 self.errors.push(ValidationError {
                     path: container.get_full_path(),
-                    message: format!("container references unknown system {:?}", container.system_id),
+                    message: format!(
+                        "container references unknown system {:?}",
+                        container.system_id
+                    ),
                     line: 0,
                     file: String::new(),
                 });
@@ -126,7 +130,7 @@ impl<'a> Resolver<'a> {
                 for inst in instances {
                     self.validate_ref(
                         &inst.container,
-                        &format!("deployment.{}.node.{}.instance", dep_id, node.id)
+                        &format!("deployment.{}.node.{}.instance", dep_id, node.id),
                     );
                 }
             }
@@ -210,7 +214,10 @@ mod tests {
             line: 42,
             file: "data/model.yaml".to_string(),
         };
-        assert_eq!(err.to_string(), "data/model.yaml:42: relationship.from: unresolved reference");
+        assert_eq!(
+            err.to_string(),
+            "data/model.yaml:42: relationship.from: unresolved reference"
+        );
 
         let err = ValidationError {
             path: "relationship.from".to_string(),

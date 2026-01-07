@@ -325,10 +325,7 @@ pub fn rewrite_markdown_links(html: &str, current_path: &str) -> String {
     re.replace_all(html, |caps: &regex::Captures| {
         let href = &caps[1];
 
-        if href.starts_with("http://")
-            || href.starts_with("https://")
-            || href.starts_with('/')
-        {
+        if href.starts_with("http://") || href.starts_with("https://") || href.starts_with('/') {
             return format!(r#"href="{}""#, href);
         }
 

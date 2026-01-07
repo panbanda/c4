@@ -1,8 +1,8 @@
+use super::{CliError, Result};
+use crate::parser::{Parser, Resolver};
 use clap::Args;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
-use super::{CliError, Result};
-use crate::parser::{Parser, Resolver};
 
 #[derive(Args, Debug)]
 pub struct ValidateArgs {
@@ -71,7 +71,7 @@ pub fn run_validate(args: ValidateArgs, work_dir: &PathBuf, verbose: bool) -> Re
     let mod_path = work_dir.join("c4.mod.yaml");
     if !mod_path.exists() {
         return Err(CliError::Validation(
-            "c4.mod.yaml not found. Run 'c4 init' to initialize a workspace.".to_string()
+            "c4.mod.yaml not found. Run 'c4 init' to initialize a workspace.".to_string(),
         ));
     }
 
@@ -86,15 +86,17 @@ pub fn run_validate(args: ValidateArgs, work_dir: &PathBuf, verbose: bool) -> Re
     }
 
     if !result.valid {
-        return Err(CliError::Validation(
-            format!("validation failed with {} errors", result.errors.len())
-        ));
+        return Err(CliError::Validation(format!(
+            "validation failed with {} errors",
+            result.errors.len()
+        )));
     }
 
     if args.strict && !result.warnings.is_empty() {
-        return Err(CliError::Validation(
-            format!("strict mode: validation failed with {} warnings", result.warnings.len())
-        ));
+        return Err(CliError::Validation(format!(
+            "strict mode: validation failed with {} warnings",
+            result.warnings.len()
+        )));
     }
 
     Ok(())
@@ -138,7 +140,11 @@ fn validate_workspace(work_dir: &PathBuf, _args: &ValidateArgs) -> Result<Valida
         .iter()
         .map(|e| ValidationError {
             message: e.message.clone(),
-            file: if e.file.is_empty() { None } else { Some(e.file.clone()) },
+            file: if e.file.is_empty() {
+                None
+            } else {
+                Some(e.file.clone())
+            },
             line: if e.line == 0 { None } else { Some(e.line) },
         })
         .collect();
@@ -266,13 +272,20 @@ mod tests {
 
         let result = run_validate(args, &dir.path().to_path_buf(), false);
         assert!(result.is_err());
-        assert!(result.unwrap_err().to_string().contains("c4.mod.yaml not found"));
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("c4.mod.yaml not found"));
     }
 
     #[test]
     fn test_validate_with_mod_file() {
         let dir = TempDir::new().unwrap();
-        fs::write(dir.path().join("c4.mod.yaml"), "version: \"1.0\"\nname: test\n").unwrap();
+        fs::write(
+            dir.path().join("c4.mod.yaml"),
+            "version: \"1.0\"\nname: test\n",
+        )
+        .unwrap();
 
         let args = ValidateArgs {
             files: vec![],
@@ -287,7 +300,11 @@ mod tests {
     #[test]
     fn test_validate_json_output() {
         let dir = TempDir::new().unwrap();
-        fs::write(dir.path().join("c4.mod.yaml"), "version: \"1.0\"\nname: test\n").unwrap();
+        fs::write(
+            dir.path().join("c4.mod.yaml"),
+            "version: \"1.0\"\nname: test\n",
+        )
+        .unwrap();
 
         let args = ValidateArgs {
             files: vec![],

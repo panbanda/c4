@@ -463,7 +463,10 @@ mod tests {
         assert_eq!(base.id, "user1");
         assert_eq!(base.name, "User");
         assert_eq!(base.description.as_deref(), Some("A user"));
-        assert_eq!(base.tags.as_deref(), Some(&vec!["external".to_string()][..]));
+        assert_eq!(
+            base.tags.as_deref(),
+            Some(&vec!["external".to_string()][..])
+        );
         assert_eq!(
             base.properties.as_ref().unwrap().get("color").unwrap(),
             "blue"
@@ -851,9 +854,7 @@ mod tests {
 
     #[test]
     fn test_options_serialization() {
-        let options = Options {
-            show_minimap: true,
-        };
+        let options = Options { show_minimap: true };
 
         let json = serde_json::to_value(&options).unwrap();
         assert_eq!(json["showMinimap"], true);

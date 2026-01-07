@@ -1,7 +1,7 @@
+use super::{CliError, Result};
 use clap::Args;
 use std::fs;
 use std::path::{Path, PathBuf};
-use super::{CliError, Result};
 
 #[derive(Args, Debug)]
 pub struct InitArgs {
@@ -23,11 +23,15 @@ pub fn run_init(args: InitArgs, work_dir: &PathBuf) -> Result<()> {
     let mod_path = work_dir.join("c4.mod.yaml");
     if mod_path.exists() {
         return Err(CliError::Init(
-            "workspace already initialized (c4.mod.yaml exists)".to_string()
+            "workspace already initialized (c4.mod.yaml exists)".to_string(),
         ));
     }
 
-    println!("Initializing C4 workspace \"{}\" in {}", name, work_dir.display());
+    println!(
+        "Initializing C4 workspace \"{}\" in {}",
+        name,
+        work_dir.display()
+    );
 
     create_directories(work_dir, args.minimal)?;
     create_mod_file(work_dir, &name)?;
@@ -45,10 +49,7 @@ fn create_directories(work_dir: &Path, minimal: bool) -> Result<()> {
     let mut dirs = vec!["_schema", "shared"];
 
     if !minimal {
-        dirs.extend_from_slice(&[
-            "systems/example",
-            "deployments",
-        ]);
+        dirs.extend_from_slice(&["systems/example", "deployments"]);
     }
 
     for dir in dirs {
@@ -62,7 +63,7 @@ fn create_directories(work_dir: &Path, minimal: bool) -> Result<()> {
 
 fn create_mod_file(work_dir: &Path, name: &str) -> Result<()> {
     let content = format!(
-r#"version: "1.0"
+        r#"version: "1.0"
 name: {}
 
 include:
@@ -187,8 +188,9 @@ systems:
     for (path, content) in &files {
         let full_path = work_dir.join(path);
         if let Some(parent) = full_path.parent() {
-            fs::create_dir_all(parent)
-                .map_err(|e| CliError::Init(format!("failed to create directory for {}: {}", path, e)))?;
+            fs::create_dir_all(parent).map_err(|e| {
+                CliError::Init(format!("failed to create directory for {}: {}", path, e))
+            })?;
         }
         fs::write(&full_path, content)
             .map_err(|e| CliError::Init(format!("failed to create {}: {}", path, e)))?;
@@ -288,7 +290,10 @@ mod tests {
         assert!(dir.path().join("shared/external-systems.yaml").exists());
         assert!(dir.path().join("systems/example/system.yaml").exists());
         assert!(dir.path().join("systems/example/containers.yaml").exists());
-        assert!(dir.path().join("systems/example/relationships.yaml").exists());
+        assert!(dir
+            .path()
+            .join("systems/example/relationships.yaml")
+            .exists());
         assert!(dir.path().join("deployments/production.yaml").exists());
     }
 
@@ -306,6 +311,9 @@ mod tests {
 
         let result = run_init(args, &dir.path().to_path_buf());
         assert!(result.is_err());
-        assert!(result.unwrap_err().to_string().contains("already initialized"));
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("already initialized"));
     }
 }

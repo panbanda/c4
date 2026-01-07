@@ -2,7 +2,10 @@ mod docs;
 mod hub;
 mod watcher;
 
-pub use docs::{build_navigation, extract_title, render_navigation, rewrite_markdown_links, DocsHandler, NavItem};
+pub use docs::{
+    build_navigation, extract_title, render_navigation, rewrite_markdown_links, DocsHandler,
+    NavItem,
+};
 pub use hub::{Client, Hub};
 pub use watcher::Watcher;
 
@@ -73,9 +76,7 @@ impl Server {
                     if state.config.verbose {
                         eprintln!("File changed: {}", path);
                     }
-                    state
-                        .hub
-                        .broadcast(br#"{"type":"reload"}"#.to_vec());
+                    state.hub.broadcast(br#"{"type":"reload"}"#.to_vec());
                 });
             })?)
         } else {
@@ -174,9 +175,7 @@ async fn handle_update_element(
         eprintln!("Updating {} {}: {:?}", element_type, id, update.fields);
     }
 
-    state
-        .hub
-        .broadcast(br#"{"type":"reload"}"#.to_vec());
+    state.hub.broadcast(br#"{"type":"reload"}"#.to_vec());
 
     let model = state.model.read().await;
     match model.as_ref() {
@@ -215,19 +214,14 @@ async fn handle_socket(socket: WebSocket, state: ServerState) {
         }
     });
 
-    let recv_task = tokio::spawn(async move {
-        while receiver.next().await.is_some() {}
-    });
+    let recv_task = tokio::spawn(async move { while receiver.next().await.is_some() {} });
 
     let _ = tokio::try_join!(send_task, recv_task);
 
     state.hub.unregister(client_id);
 }
 
-async fn handle_docs(
-    State(state): State<ServerState>,
-    path: Option<Path<String>>,
-) -> Response {
+async fn handle_docs(State(state): State<ServerState>, path: Option<Path<String>>) -> Response {
     let handler = DocsHandler::new(&state.config.work_dir);
     handler.serve(path).await
 }
@@ -386,9 +380,12 @@ mod tests {
             fields: serde_json::Map::new(),
         };
 
-        let response =
-            handle_update_element(State(state), Path(("invalid".to_string(), "id".to_string())), Json(update))
-                .await;
+        let response = handle_update_element(
+            State(state),
+            Path(("invalid".to_string(), "id".to_string())),
+            Json(update),
+        )
+        .await;
 
         let status = response.into_response().status();
         assert_eq!(status, StatusCode::BAD_REQUEST);

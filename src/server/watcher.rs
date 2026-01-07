@@ -236,7 +236,9 @@ mod tests {
 
         {
             let captured = changes.lock().unwrap();
-            assert!(captured.is_empty() || !captured.iter().any(|p| p.contains("after_close.yaml")));
+            assert!(
+                captured.is_empty() || !captured.iter().any(|p| p.contains("after_close.yaml"))
+            );
         }
     }
 
