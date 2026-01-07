@@ -1,0 +1,11 @@
+systems:
+  - id: order-service
+    name: Order Service
+    description: Manages customer orders, cart, and checkout processes
+    tags:
+      - core
+      - domain:orders
+    properties:
+      team: orders-team
+      oncall: orders-oncall@company.com
+      sla: "99.9%"

@@ -1,0 +1,42 @@
+flows:
+  - id: fulfillment-flow
+    name: Order Fulfillment Flow
+    description: Process order from payment to shipment
+    tags:
+      - operations
+      - async
+    steps:
+      - seq: 1
+        from: order-service.order-events
+        to: order-service.order-processor
+        description: OrderPaid event received
+        technology: Kafka
+
+      - seq: 2
+        from: order-service.order-processor
+        to: inventory-service.stock-manager
+        description: Reserves inventory
+        technology: gRPC
+
+      - seq: 3
+        from: order-service.order-processor
+        to: order-service.order-db
+        description: Updates order status to Processing
+        technology: SQL
+
+      - seq: 4
+        from: order-service.order-processor
+        to: order-service.order-events
+        description: Publishes OrderProcessing event
+        technology: Kafka
+
+      - seq: 5
+        from: notification-service.notification-api
+        to: notification-service.email-worker
+        description: Queues processing notification
+
+      - seq: 6
+        from: notification-service.email-worker
+        to: sendgrid
+        description: Sends processing email
+        technology: REST, HTTPS

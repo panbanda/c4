@@ -1,0 +1,34 @@
+containers:
+  - id: inventory-api
+    name: Inventory API
+    description: REST/gRPC API for inventory queries and updates
+    technology: Rust, Actix
+    tags:
+      - api
+      - high-performance
+    properties:
+      port: 8081
+
+  - id: stock-manager
+    name: Stock Manager
+    description: Manages stock reservations and availability
+    technology: Rust
+    tags:
+      - worker
+      - critical
+
+  - id: inventory-db
+    name: Inventory Database
+    description: Primary inventory data store
+    technology: PostgreSQL 15
+    tags:
+      - database
+      - primary
+
+  - id: inventory-search
+    name: Inventory Search
+    description: Full-text search for products
+    technology: Elasticsearch 8
+    tags:
+      - search
+      - read-replica

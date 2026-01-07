@@ -1,0 +1,33 @@
+systems:
+  - id: stripe
+    name: Stripe
+    description: Payment processing platform
+    external: true
+    tags:
+      - external
+      - payment
+      - pci-dss
+
+  - id: sendgrid
+    name: SendGrid
+    description: Email delivery service
+    external: true
+    tags:
+      - external
+      - email
+
+  - id: twilio
+    name: Twilio
+    description: SMS and messaging platform
+    external: true
+    tags:
+      - external
+      - sms
+
+  - id: shippo
+    name: Shippo
+    description: Shipping and logistics API
+    external: true
+    tags:
+      - external
+      - shipping

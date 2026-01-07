@@ -1,0 +1,41 @@
+relationships:
+  - from: order-service.order-events
+    to: notification-service.notification-api
+    description: Triggers order notifications
+    technology: Kafka
+    tags:
+      - event-driven
+
+  - from: notification-service.notification-api
+    to: notification-service.notification-queue
+    description: Queues notifications for processing
+    technology: AMQP
+
+  - from: notification-service.notification-api
+    to: notification-service.template-store
+    description: Fetches notification templates
+    technology: MongoDB protocol
+
+  - from: notification-service.email-worker
+    to: notification-service.notification-queue
+    description: Consumes email jobs
+    technology: AMQP
+
+  - from: notification-service.sms-worker
+    to: notification-service.notification-queue
+    description: Consumes SMS jobs
+    technology: AMQP
+
+  - from: notification-service.email-worker
+    to: sendgrid
+    description: Sends emails
+    technology: REST, HTTPS
+    tags:
+      - external
+
+  - from: notification-service.sms-worker
+    to: twilio
+    description: Sends SMS messages
+    technology: REST, HTTPS
+    tags:
+      - external

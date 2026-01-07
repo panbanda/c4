@@ -1,0 +1,6 @@
+version: "1.0"
+name: simple-todo-app
+
+include:
+  - shared/*.yaml
+  - systems/**/*.yaml

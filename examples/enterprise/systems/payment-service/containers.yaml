@@ -1,0 +1,41 @@
+containers:
+  - id: payment-api
+    name: Payment API
+    description: Secure API for payment operations
+    technology: Go
+    tags:
+      - api
+      - pci-dss
+      - encrypted
+    properties:
+      port: 8082
+      tls: required
+      encryption: AES-256
+
+  - id: payment-processor
+    name: Payment Processor
+    description: Processes payments through external providers
+    technology: Go
+    tags:
+      - worker
+      - pci-dss
+
+  - id: payment-db
+    name: Payment Database
+    description: Encrypted database for payment records
+    technology: PostgreSQL 15
+    tags:
+      - database
+      - encrypted
+      - pci-dss
+    properties:
+      encryption: at-rest
+      backup: hourly
+
+  - id: payment-vault
+    name: Secret Vault
+    description: Stores sensitive payment credentials
+    technology: HashiCorp Vault
+    tags:
+      - security
+      - secrets

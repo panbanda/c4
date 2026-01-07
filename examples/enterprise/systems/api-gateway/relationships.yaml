@@ -1,0 +1,45 @@
+relationships:
+  - from: customer
+    to: api-gateway.web-app
+    description: Browses products and places orders
+    technology: HTTPS
+    tags:
+      - user-interaction
+
+  - from: admin
+    to: api-gateway.admin-app
+    description: Manages inventory and orders
+    technology: HTTPS
+    tags:
+      - user-interaction
+      - internal
+
+  - from: api-gateway.web-app
+    to: api-gateway.gateway
+    description: Sends API requests
+    technology: REST, JSON
+
+  - from: api-gateway.admin-app
+    to: api-gateway.gateway
+    description: Sends admin API requests
+    technology: REST, JSON
+
+  - from: api-gateway.gateway
+    to: api-gateway.auth
+    description: Validates authentication
+    technology: gRPC
+
+  - from: api-gateway.gateway
+    to: api-gateway.rate-limiter
+    description: Checks rate limits
+    technology: gRPC
+
+  - from: api-gateway.auth
+    to: api-gateway.auth.session-manager
+    description: Manages sessions
+    technology: Internal
+
+  - from: api-gateway.auth.session-manager
+    to: api-gateway.rate-limiter
+    description: Stores session data
+    technology: Redis protocol

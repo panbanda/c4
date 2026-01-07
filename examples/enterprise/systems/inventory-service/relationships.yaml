@@ -1,0 +1,27 @@
+relationships:
+  - from: api-gateway.gateway
+    to: inventory-service.inventory-api
+    description: Routes inventory queries
+    technology: gRPC
+
+  - from: inventory-service.inventory-api
+    to: inventory-service.inventory-db
+    description: Queries inventory data
+    technology: SQL
+
+  - from: inventory-service.inventory-api
+    to: inventory-service.inventory-search
+    description: Searches products
+    technology: REST
+
+  - from: inventory-service.stock-manager
+    to: inventory-service.inventory-db
+    description: Updates stock levels
+    technology: SQL
+
+  - from: order-service.order-processor
+    to: inventory-service.stock-manager
+    description: Reserves stock for orders
+    technology: gRPC
+    tags:
+      - cross-service

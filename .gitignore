@@ -24,7 +24,6 @@ coverage.out
 # Layout cache
 .c4/
 
-# Examples (temporary)
-examples/
+# Build
 /target/
 /.claude-flow/

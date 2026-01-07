@@ -1,0 +1,44 @@
+relationships:
+  - from: api-gateway.gateway
+    to: order-service.order-api
+    description: Routes order requests
+    technology: gRPC
+    tags:
+      - sync
+
+  - from: api-gateway.gateway
+    to: order-service.cart-service
+    description: Routes cart requests
+    technology: gRPC
+    tags:
+      - sync
+
+  - from: order-service.order-api
+    to: order-service.order-db
+    description: Persists order data
+    technology: SQL
+
+  - from: order-service.order-api
+    to: order-service.order-cache
+    description: Caches order data
+    technology: Redis protocol
+
+  - from: order-service.order-api
+    to: order-service.order-events
+    description: Publishes order events
+    technology: Kafka
+
+  - from: order-service.cart-service
+    to: order-service.order-cache
+    description: Stores cart state
+    technology: Redis protocol
+
+  - from: order-service.order-processor
+    to: order-service.order-events
+    description: Consumes order events
+    technology: Kafka
+
+  - from: order-service.order-processor
+    to: order-service.order-db
+    description: Updates order status
+    technology: SQL

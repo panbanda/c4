@@ -1,0 +1,4 @@
+systems:
+  - id: todo-app
+    name: Todo Application
+    description: A simple task management application

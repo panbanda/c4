@@ -1,0 +1,15 @@
+relationships:
+  - from: user
+    to: todo-app.web
+    description: Manages tasks via browser
+    technology: HTTPS
+
+  - from: todo-app.web
+    to: todo-app.api
+    description: Makes API requests
+    technology: REST, JSON
+
+  - from: todo-app.api
+    to: todo-app.database
+    description: Reads and writes data
+    technology: SQL

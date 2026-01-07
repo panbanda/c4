@@ -1,0 +1,30 @@
+components:
+  - id: order-handler
+    name: Order Handler
+    description: HTTP handlers for order CRUD operations
+    technology: Go, Chi
+    containerId: order-api
+
+  - id: checkout-handler
+    name: Checkout Handler
+    description: Orchestrates the checkout process
+    technology: Go
+    containerId: order-api
+
+  - id: order-validator
+    name: Order Validator
+    description: Validates order data and business rules
+    technology: Go
+    containerId: order-api
+
+  - id: fulfillment-worker
+    name: Fulfillment Worker
+    description: Processes orders for fulfillment
+    technology: Go
+    containerId: order-processor
+
+  - id: refund-worker
+    name: Refund Worker
+    description: Handles order cancellations and refunds
+    technology: Go
+    containerId: order-processor
