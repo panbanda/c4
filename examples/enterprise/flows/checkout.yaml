@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../../../_schema/c4.schema.json
 flows:
   - id: checkout-flow
     name: Checkout Flow

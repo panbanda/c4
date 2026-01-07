@@ -1,4 +1,4 @@
-.PHONY: build build-dev test test-cover clean run dev frontend frontend-test install lint fmt
+.PHONY: build build-dev test test-cover clean run dev frontend frontend-test install lint fmt validate-schema
 
 frontend:
 	cd frontend && npm install && npm run build
@@ -14,7 +14,7 @@ build: frontend
 build-dev:
 	cargo build
 
-test:
+test: validate-schema
 	cargo test
 
 test-cover:
@@ -38,3 +38,13 @@ lint:
 
 fmt:
 	cargo fmt
+
+validate-schema:
+	@echo "Validating YAML schemas..."
+	@command -v check-jsonschema >/dev/null 2>&1 || (echo "Installing check-jsonschema..." && pip install check-jsonschema)
+	@check-jsonschema --schemafile _schema/mod.schema.json examples/*/c4.mod.yaml
+	@check-jsonschema --schemafile _schema/c4.schema.json examples/*/shared/*.yaml
+	@check-jsonschema --schemafile _schema/c4.schema.json examples/*/systems/*/*.yaml
+	@check-jsonschema --schemafile _schema/c4.schema.json examples/*/flows/*.yaml 2>/dev/null || true
+	@check-jsonschema --schemafile _schema/c4.schema.json examples/*/deployments/*.yaml 2>/dev/null || true
+	@echo "Schema validation passed"

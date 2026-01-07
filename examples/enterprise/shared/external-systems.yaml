@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../../../_schema/c4.schema.json
 systems:
   - id: stripe
     name: Stripe

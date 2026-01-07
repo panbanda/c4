@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../../../../_schema/c4.schema.json
 relationships:
   - from: customer
     to: api-gateway.web-app

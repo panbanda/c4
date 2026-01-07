@@ -1,6 +1,5 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://c4model.dev/schema/system.schema.json",
   "title": "Software System",
   "description": "A software system that delivers value to users",
   "type": "object",

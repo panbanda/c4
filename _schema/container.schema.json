@@ -1,6 +1,5 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://c4model.dev/schema/container.schema.json",
   "title": "Container",
   "description": "A deployable/runnable unit within a software system",
   "type": "object",

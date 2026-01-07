@@ -1,6 +1,5 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://c4model.dev/schema/component.schema.json",
   "title": "Component",
   "description": "A grouping of related functionality within a container",
   "type": "object",
@@ -19,6 +18,14 @@
     },
     "technology": {
       "type": "string"
+    },
+    "systemId": {
+      "type": "string",
+      "description": "Parent system ID"
+    },
+    "containerId": {
+      "type": "string",
+      "description": "Parent container ID"
     },
     "tags": {
       "type": "array",

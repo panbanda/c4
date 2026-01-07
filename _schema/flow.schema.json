@@ -1,6 +1,5 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://c4model.dev/schema/flow.schema.json",
   "title": "Flow",
   "description": "A dynamic diagram showing runtime interactions",
   "type": "object",

@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../../../../_schema/c4.schema.json
 relationships:
   - from: order-service.order-events
     to: notification-service.notification-api

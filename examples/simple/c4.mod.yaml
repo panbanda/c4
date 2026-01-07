@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../../_schema/mod.schema.json
 version: "1.0"
 name: simple-todo-app
 
