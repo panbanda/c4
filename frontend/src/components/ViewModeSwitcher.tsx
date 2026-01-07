@@ -1,4 +1,4 @@
-import { memo, useState, useRef, useEffect } from 'react'
+import { memo, useState, useRef, useEffect, useMemo } from 'react'
 import { useStore } from '../store/useStore'
 
 interface ViewModeSwitcherProps {
@@ -11,6 +11,9 @@ export const ViewModeSwitcher = memo(({ className = '' }: ViewModeSwitcherProps)
   const [lastSystemId, setLastSystemId] = useState<string | null>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
+  const isArchitectureView = currentView === 'container' || currentView === 'component'
+  const isDeploymentView = currentView === 'deployment'
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -22,14 +25,10 @@ export const ViewModeSwitcher = memo(({ className = '' }: ViewModeSwitcherProps)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const isArchitectureView = currentView === 'container' || currentView === 'component'
-  const isDeploymentView = currentView === 'deployment'
-
-  if (!isArchitectureView && !isDeploymentView) return null
-  if (!model) return null
-
   // Derive system ID from various sources
-  const getSystemId = (): string | null => {
+  const systemId = useMemo((): string | null => {
+    if (!model) return lastSystemId
+
     // If in architecture view, focusElement is the system/container ID
     if (isArchitectureView && focusElement) {
       // Check if it's a container (component view)
@@ -59,9 +58,7 @@ export const ViewModeSwitcher = memo(({ className = '' }: ViewModeSwitcherProps)
 
     // Use last known system ID
     return lastSystemId
-  }
-
-  const systemId = getSystemId()
+  }, [model, isArchitectureView, focusElement, selectedElement, lastSystemId])
 
   // Track last system ID when in architecture view
   useEffect(() => {
@@ -69,6 +66,10 @@ export const ViewModeSwitcher = memo(({ className = '' }: ViewModeSwitcherProps)
       setLastSystemId(systemId)
     }
   }, [isArchitectureView, systemId])
+
+  // Early returns AFTER all hooks
+  if (!isArchitectureView && !isDeploymentView) return null
+  if (!model) return null
 
   // Find deployments that contain containers from this system
   const getDeploymentsForSystem = () => {
