@@ -5,7 +5,7 @@
   },
   "metadata": {
     "description": "Claude Code plugins for C4 architecture modeling and visualization",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "homepage": "https://github.com/panbanda/c4",
     "repository": "https://github.com/panbanda/c4"
   },
