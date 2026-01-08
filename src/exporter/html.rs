@@ -201,14 +201,14 @@ mod tests {
                 .unwrap()
                 .path()
                 .extension()
-                .map_or(false, |ext| ext == "css")
+                .is_some_and(|ext| ext == "css")
         });
         let has_js = entries.iter().any(|e| {
             e.as_ref()
                 .unwrap()
                 .path()
                 .extension()
-                .map_or(false, |ext| ext == "js")
+                .is_some_and(|ext| ext == "js")
         });
 
         assert!(has_css, "Expected at least one CSS file in assets/");
