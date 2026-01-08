@@ -130,8 +130,17 @@ export const AnimatedFlowEdge = memo(
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
             >
-              <div className={`bg-slate-800/95 border rounded px-2 py-1 text-xs max-w-[180px] text-center shadow-lg transition-colors ${isHovered || edgeData?.isHighlighted ? 'border-blue-400' : 'border-slate-600'}`}>
-                <div className="text-slate-200 leading-tight">{edgeData?.description}</div>
+              <div className={`bg-slate-800/95 border rounded px-2 py-1.5 text-xs max-w-[200px] shadow-lg transition-colors ${isHovered || edgeData?.isHighlighted ? 'border-blue-400' : 'border-slate-600'}`}>
+                <div className="text-slate-200 leading-tight text-center">{edgeData?.description}</div>
+                {edgeData?.technology && edgeData.technology.length > 0 && (
+                  <div className="flex flex-wrap gap-1 justify-center mt-1.5 pt-1.5 border-t border-slate-700">
+                    {edgeData.technology.map((tech, i) => (
+                      <span key={i} className="px-1.5 py-0.5 bg-slate-700 rounded text-[10px] text-slate-400">
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </EdgeLabelRenderer>

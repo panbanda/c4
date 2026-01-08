@@ -8,6 +8,8 @@ import { Canvas } from './components/Canvas'
 import { SidePanel } from './components/SidePanel'
 import { FlowPlayer } from './components/FlowPlayer'
 import { LoadingSpinner } from './components/LoadingSpinner'
+import { KeyboardShortcuts } from './components/KeyboardShortcuts'
+import { CommandPalette } from './components/CommandPalette'
 
 export default function App() {
   const { setModel, setLoading, setError, loading, error, toggleEditMode, saveChanges, hasPendingChanges } = useStore()
@@ -91,6 +93,8 @@ export default function App() {
         </div>
         <SidePanel />
       </main>
+      <KeyboardShortcuts />
+      <CommandPalette />
     </div>
   )
 }
