@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5](https://github.com/panbanda/c4/compare/c4-v0.1.4...c4-v0.1.5) (2026-01-08)
+
+
+### Features
+
+* **frontend:** improve UX with unified search, flow visualization, and edge styling ([bd02663](https://github.com/panbanda/c4/commit/bd02663cab219d165385f078cc48aab2b354b058))
+
 ## [0.1.4](https://github.com/panbanda/c4/compare/c4-v0.1.3...c4-v0.1.4) (2026-01-08)
 
 
