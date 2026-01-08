@@ -130,7 +130,7 @@ describe('getTechnologyColor', () => {
 
 describe('BASE_NODE_CLASSES', () => {
   it('should define container class', () => {
-    expect(BASE_NODE_CLASSES.container).toContain('rounded-lg')
+    expect(BASE_NODE_CLASSES.container).toContain('rounded')
   })
 
   it('should define selected class', () => {
@@ -142,7 +142,7 @@ describe('BASE_NODE_CLASSES', () => {
   })
 
   it('should define title class', () => {
-    expect(BASE_NODE_CLASSES.title).toContain('font-semibold')
+    expect(BASE_NODE_CLASSES.title).toContain('font-medium')
   })
 
   it('should define description class', () => {
@@ -164,26 +164,26 @@ describe('ELEMENT_COLORS', () => {
   })
 
   it('should define system focus color', () => {
-    expect(ELEMENT_COLORS.system.focus).toContain('blue-700')
+    expect(ELEMENT_COLORS.system.focus).toContain('blue-6')
   })
 
   it('should define system internal color', () => {
-    expect(ELEMENT_COLORS.system.internal).toContain('slate-600')
+    expect(ELEMENT_COLORS.system.internal).toContain('slate-7')
   })
 
   it('should define system external color', () => {
-    expect(ELEMENT_COLORS.system.external).toContain('amber-700')
+    expect(ELEMENT_COLORS.system.external).toContain('amber-7')
   })
 
   it('should define container default color', () => {
-    expect(ELEMENT_COLORS.container.default).toContain('blue-700')
+    expect(ELEMENT_COLORS.container.default).toContain('blue-7')
   })
 
   it('should define component default color', () => {
-    expect(ELEMENT_COLORS.component.default).toContain('indigo-700')
+    expect(ELEMENT_COLORS.component.default).toContain('indigo-7')
   })
 
   it('should define deployment default color', () => {
-    expect(ELEMENT_COLORS.deployment.default).toContain('emerald-700')
+    expect(ELEMENT_COLORS.deployment.default).toContain('emerald-7')
   })
 })

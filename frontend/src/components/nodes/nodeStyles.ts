@@ -33,31 +33,31 @@ export function getTechnologyColor(technology?: string[]): string {
 }
 
 export const BASE_NODE_CLASSES = {
-  container: 'rounded-lg shadow-lg transition-all duration-200',
-  selected: 'ring-2 ring-blue-400 ring-offset-2 ring-offset-slate-900',
-  hover: 'shadow-xl',
-  title: 'font-semibold text-sm leading-tight',
-  description: 'text-xs text-slate-300 leading-relaxed line-clamp-4',
-  badge: 'px-2 py-0.5 rounded text-xs font-medium whitespace-nowrap',
+  container: 'rounded-xl shadow-lg transition-all duration-200 backdrop-blur-sm',
+  selected: 'ring-2 ring-blue-400/70 ring-offset-2 ring-offset-slate-900',
+  hover: 'shadow-xl scale-[1.02]',
+  title: 'font-medium text-sm leading-tight',
+  description: 'text-xs text-slate-300/80 leading-relaxed line-clamp-3',
+  badge: 'px-1.5 py-0.5 rounded text-[10px] font-medium whitespace-nowrap',
 } as const
 
 export const ELEMENT_COLORS = {
   person: {
-    internal: 'bg-teal-700 border-teal-600',
-    external: 'bg-teal-800 border-teal-700',
+    internal: 'bg-teal-700/90 border-teal-500/50',
+    external: 'bg-teal-800/90 border-teal-600/50',
   },
   system: {
-    focus: 'bg-blue-700 border-blue-600',
-    internal: 'bg-slate-600 border-slate-500',
-    external: 'bg-amber-700 border-amber-600',
+    focus: 'bg-blue-600/90 border-blue-400/50',
+    internal: 'bg-slate-700/90 border-slate-500/50',
+    external: 'bg-amber-700/90 border-amber-500/50',
   },
   container: {
-    default: 'bg-blue-700 border-blue-600',
+    default: 'bg-blue-700/90 border-blue-500/50',
   },
   component: {
-    default: 'bg-indigo-700 border-indigo-600',
+    default: 'bg-indigo-700/90 border-indigo-500/50',
   },
   deployment: {
-    default: 'bg-emerald-700 border-emerald-600',
+    default: 'bg-emerald-700/90 border-emerald-500/50',
   },
 } as const

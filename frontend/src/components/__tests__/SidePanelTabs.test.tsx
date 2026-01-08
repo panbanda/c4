@@ -19,7 +19,7 @@ describe('SidePanelTabs', () => {
   it('highlights active tab', () => {
     render(<SidePanelTabs tabs={tabs} activeTab="dependencies" onTabChange={() => {}} />)
     const activeTab = screen.getByText('Dependencies').closest('button')
-    expect(activeTab).toHaveClass('border-blue-500')
+    expect(activeTab).toHaveClass('bg-slate-700')
   })
 
   it('calls onTabChange when tab clicked', () => {

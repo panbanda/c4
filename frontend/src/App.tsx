@@ -78,7 +78,7 @@ export default function App() {
   })
 
   return (
-    <div className="flex flex-col h-screen bg-[#1a1a1a] text-slate-200">
+    <div className="flex flex-col h-screen bg-[#121212] text-slate-200">
       <Header />
       <main className="flex-1 flex overflow-hidden">
         <div className="flex-1 relative">

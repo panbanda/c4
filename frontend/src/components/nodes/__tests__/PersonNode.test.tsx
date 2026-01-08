@@ -99,7 +99,7 @@ describe('PersonNode', () => {
 
     render(<PersonNode {...baseNodeProps} data={data} selected={false} />, { wrapper })
 
-    const node = screen.getByText('User').closest('div[class*="rounded-lg"]')
+    const node = screen.getByText('User').closest('div[class*="rounded"]')
     fireEvent.click(node!)
 
     expect(mockOnSelect).toHaveBeenCalledWith('person1')
@@ -118,7 +118,7 @@ describe('PersonNode', () => {
       <PersonNode {...baseNodeProps} data={data} selected={false} />,
       { wrapper }
     )
-    expect(container.querySelector('.bg-teal-800')).toBeInTheDocument()
+    expect(container.querySelector('[class*="teal-800"]')).toBeInTheDocument()
   })
 
   it('should apply internal styling for internal persons', () => {
@@ -134,7 +134,7 @@ describe('PersonNode', () => {
       <PersonNode {...baseNodeProps} data={data} selected={false} />,
       { wrapper }
     )
-    expect(container.querySelector('.bg-teal-700')).toBeInTheDocument()
+    expect(container.querySelector('[class*="teal-700"]')).toBeInTheDocument()
   })
 
   it('should show selected styling when selected', () => {
@@ -186,7 +186,7 @@ describe('PersonNode', () => {
 
     render(<PersonNode {...baseNodeProps} data={data} selected={false} />, { wrapper })
 
-    const node = screen.getByText('User').closest('div[class*="rounded-lg"]')
+    const node = screen.getByText('User').closest('div[class*="rounded"]')
     expect(() => fireEvent.click(node!)).not.toThrow()
   })
 

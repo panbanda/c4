@@ -123,7 +123,7 @@ describe('ComponentNode', () => {
 
     render(<ComponentNode {...baseNodeProps} data={data} selected={false} />, { wrapper })
 
-    const node = screen.getByText('Service').closest('div[class*="rounded-lg"]')
+    const node = screen.getByText('Service').closest('div[class*="rounded"]')
     fireEvent.click(node!)
 
     expect(mockOnSelect).toHaveBeenCalledWith('comp1')
@@ -201,7 +201,7 @@ describe('ComponentNode', () => {
 
     render(<ComponentNode {...baseNodeProps} data={data} selected={false} />, { wrapper })
 
-    const node = screen.getByText('Service').closest('div[class*="rounded-lg"]')
+    const node = screen.getByText('Service').closest('div[class*="rounded"]')
     expect(() => fireEvent.click(node!)).not.toThrow()
   })
 

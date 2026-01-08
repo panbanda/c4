@@ -85,7 +85,7 @@ describe('DeploymentNode', () => {
 
     render(<DeploymentNode {...baseNodeProps} data={data} selected={false} />, { wrapper })
 
-    const node = screen.getByText('Server').closest('div[class*="rounded-lg"]')
+    const node = screen.getByText('Server').closest('div[class*="rounded"]')
     fireEvent.click(node!)
 
     expect(mockOnSelect).toHaveBeenCalledWith('deploy1')
@@ -187,7 +187,7 @@ describe('DeploymentNode', () => {
 
     render(<DeploymentNode {...baseNodeProps} data={data} selected={false} />, { wrapper })
 
-    const node = screen.getByText('Server').closest('div[class*="rounded-lg"]')
+    const node = screen.getByText('Server').closest('div[class*="rounded"]')
     expect(() => fireEvent.click(node!)).not.toThrow()
   })
 

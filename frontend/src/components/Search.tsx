@@ -17,9 +17,9 @@ export function Search() {
   }, [filterQuery])
 
   return (
-    <div className="relative flex items-center">
+    <div className="relative flex items-center group">
       <svg
-        className="absolute left-3 w-4 h-4 text-slate-400"
+        className="absolute left-2.5 w-4 h-4 text-slate-500 group-focus-within:text-slate-400 transition-colors"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -35,23 +35,27 @@ export function Search() {
         type="text"
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
-        placeholder="Search elements..."
-        className="w-64 pl-10 pr-10 py-1.5 bg-[#1a1a1a] border border-[#333333] rounded text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-slate-500"
+        placeholder="Search..."
+        className="w-48 pl-8 pr-16 py-1 bg-slate-800/50 border border-slate-700/50 rounded-md text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:bg-slate-800 focus:border-slate-600 transition-colors"
       />
-      {inputValue && (
-        <button
-          onClick={() => {
-            setInputValue('')
-            setFilterQuery('')
-          }}
-          className="absolute right-2 text-slate-400 hover:text-slate-200 transition-colors"
-          aria-label="clear search"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      )}
+      <div className="absolute right-2 flex items-center gap-1">
+        {inputValue ? (
+          <button
+            onClick={() => {
+              setInputValue('')
+              setFilterQuery('')
+            }}
+            className="text-slate-500 hover:text-slate-300 transition-colors"
+            aria-label="clear search"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        ) : (
+          <kbd className="px-1.5 py-0.5 bg-slate-700/50 border border-slate-600/50 rounded text-[10px] text-slate-500 font-mono">/</kbd>
+        )}
+      </div>
     </div>
   )
 }
