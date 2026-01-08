@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { C4Model, ViewType, Element } from '../types/c4'
+import type { C4Model, ViewType } from '../types/c4'
 import type { CentralityResult } from '../utils/centrality'
 
 interface AppState {
@@ -17,9 +17,6 @@ interface AppState {
   flowSpeed: number
   flowHighlightedNodes: string[]
 
-  editMode: boolean
-  pendingChanges: Map<string, Partial<Element>>
-
   centralityData: CentralityResult | null
 
   setModel: (model: C4Model | null) => Promise<void>
@@ -34,12 +31,6 @@ interface AppState {
   nextStep: () => void
   prevStep: () => void
   setFlowSpeed: (speed: number) => void
-
-  toggleEditMode: () => void
-  updateElement: (id: string, changes: Partial<Element>) => void
-  saveChanges: () => Promise<void>
-  discardChanges: () => void
-  hasPendingChanges: () => boolean
 }
 
 export const useStore = create<AppState>((set, get) => ({
@@ -56,9 +47,6 @@ export const useStore = create<AppState>((set, get) => ({
   flowPlaying: false,
   flowSpeed: 1000,
   flowHighlightedNodes: [],
-
-  editMode: false,
-  pendingChanges: new Map(),
 
   centralityData: null,
 
@@ -121,50 +109,4 @@ export const useStore = create<AppState>((set, get) => ({
   },
 
   setFlowSpeed: (speed) => set({ flowSpeed: speed }),
-
-  toggleEditMode: () => {
-    const { editMode, pendingChanges } = get()
-    if (editMode && pendingChanges.size > 0) {
-      const confirmed = window.confirm('You have unsaved changes. Discard them?')
-      if (!confirmed) return
-    }
-    set({ editMode: !editMode, pendingChanges: new Map() })
-  },
-
-  updateElement: (id, changes) => {
-    const { pendingChanges } = get()
-    const newChanges = new Map(pendingChanges)
-    const existing = newChanges.get(id) || {}
-    newChanges.set(id, { ...existing, ...changes })
-    set({ pendingChanges: newChanges })
-  },
-
-  saveChanges: async () => {
-    const { pendingChanges } = get()
-
-    for (const [id, changes] of pendingChanges.entries()) {
-      const { updateElementAPI } = await import('../api/client')
-      await updateElementAPI(id, changes)
-    }
-
-    set({ pendingChanges: new Map() })
-
-    const { setModel, setLoading, setError } = get()
-    const { getModel } = await import('../api/client')
-    setLoading(true)
-    try {
-      const model = await getModel()
-      setModel(model)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to reload model')
-    }
-  },
-
-  discardChanges: () => {
-    set({ pendingChanges: new Map() })
-  },
-
-  hasPendingChanges: () => {
-    return get().pendingChanges.size > 0
-  },
 }))

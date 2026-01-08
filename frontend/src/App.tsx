@@ -12,7 +12,7 @@ import { KeyboardShortcuts } from './components/KeyboardShortcuts'
 import { CommandPalette } from './components/CommandPalette'
 
 export default function App() {
-  const { setModel, setLoading, setError, loading, error, toggleEditMode, saveChanges, hasPendingChanges } = useStore()
+  const { setModel, setLoading, setError, loading, error } = useStore()
 
   // Sync view state with URL for deep linking
   useUrlSync()
@@ -33,40 +33,6 @@ export default function App() {
     loadModel()
   }, [])
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'e' && !e.metaKey && !e.ctrlKey && !e.altKey) {
-        const target = e.target as HTMLElement
-        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
-          return
-        }
-        e.preventDefault()
-        toggleEditMode()
-      }
-
-      if ((e.metaKey || e.ctrlKey) && e.key === 's') {
-        if (hasPendingChanges()) {
-          e.preventDefault()
-          saveChanges()
-        }
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [toggleEditMode, saveChanges, hasPendingChanges])
-
-  useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (hasPendingChanges()) {
-        e.preventDefault()
-        e.returnValue = ''
-      }
-    }
-
-    window.addEventListener('beforeunload', handleBeforeUnload)
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
-  }, [hasPendingChanges])
 
   useWebSocket({
     onReload: () => {
