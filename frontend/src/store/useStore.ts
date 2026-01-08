@@ -15,6 +15,7 @@ interface AppState {
   flowStep: number
   flowPlaying: boolean
   flowSpeed: number
+  flowHighlightedNodes: string[]
 
   editMode: boolean
   pendingChanges: Map<string, Partial<Element>>
@@ -54,6 +55,7 @@ export const useStore = create<AppState>((set, get) => ({
   flowStep: 0,
   flowPlaying: false,
   flowSpeed: 1000,
+  flowHighlightedNodes: [],
 
   editMode: false,
   pendingChanges: new Map(),
@@ -80,10 +82,14 @@ export const useStore = create<AppState>((set, get) => ({
     const flow = model?.flows.find((f) => f.id === flowId)
     if (!flow) return
 
+    const firstStep = flow.steps[0]
+    const highlightedNodes = firstStep ? [firstStep.from, firstStep.to] : []
+
     set({
       activeFlow: flowId,
       flowStep: 0,
       flowPlaying: true,
+      flowHighlightedNodes: highlightedNodes,
     })
   },
 
@@ -98,14 +104,19 @@ export const useStore = create<AppState>((set, get) => ({
 
     const maxStep = flow.steps.length - 1
     if (flowStep < maxStep) {
-      set({ flowStep: flowStep + 1 })
+      const nextStepData = flow.steps[flowStep + 1]
+      const highlightedNodes = nextStepData ? [nextStepData.from, nextStepData.to] : []
+      set({ flowStep: flowStep + 1, flowHighlightedNodes: highlightedNodes })
     }
   },
 
   prevStep: () => {
-    const { flowStep } = get()
+    const { model, activeFlow, flowStep } = get()
     if (flowStep > 0) {
-      set({ flowStep: flowStep - 1 })
+      const flow = model?.flows.find((f) => f.id === activeFlow)
+      const prevStepData = flow?.steps[flowStep - 1]
+      const highlightedNodes = prevStepData ? [prevStepData.from, prevStepData.to] : []
+      set({ flowStep: flowStep - 1, flowHighlightedNodes: highlightedNodes })
     }
   },
 

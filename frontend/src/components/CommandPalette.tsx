@@ -178,6 +178,14 @@ export function CommandPalette() {
     }
   }, [handleClose, filteredCommands, selectedIndex])
 
+  // Scroll selected item into view
+  useEffect(() => {
+    const selectedElement = document.querySelector(`[data-command-index="${selectedIndex}"]`)
+    if (selectedElement) {
+      selectedElement.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+    }
+  }, [selectedIndex])
+
   if (!isOpen) return null
 
   let flatIndex = 0
@@ -224,6 +232,7 @@ export function CommandPalette() {
                   return (
                     <button
                       key={cmd.id}
+                      data-command-index={thisIndex}
                       onClick={cmd.action}
                       onMouseEnter={() => setSelectedIndex(thisIndex)}
                       className={`w-full flex items-center gap-3 px-4 py-2 text-left transition-colors ${

@@ -1,5 +1,5 @@
-import { useCallback, useState, useMemo } from 'react'
-import { ReactFlow, Background, Controls, MiniMap, Node } from '@xyflow/react'
+import { useCallback, useMemo, useEffect, useRef } from 'react'
+import { ReactFlow, Background, Controls, MiniMap, useReactFlow, ReactFlowProvider } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 
 import { useStore } from '../store/useStore'
@@ -30,9 +30,32 @@ const edgeTypes = {
   relationship: AnimatedFlowEdge,
 } as const
 
-export function Canvas() {
-  const { model, currentView, focusElement, selectElement, setView, selectedElement, filterQuery } = useStore()
-  const [hoveredNode, setHoveredNode] = useState<string | null>(null)
+function CanvasContent() {
+  const { model, currentView, focusElement, selectElement, setView, selectedElement, filterQuery, flowHighlightedNodes, activeFlow } = useStore()
+  const { fitView, getNodes } = useReactFlow()
+  const prevFlowNodesRef = useRef<string[]>([])
+
+  // Pan to flow-highlighted nodes when they change
+  useEffect(() => {
+    if (!flowHighlightedNodes || flowHighlightedNodes.length === 0) return
+    if (JSON.stringify(flowHighlightedNodes) === JSON.stringify(prevFlowNodesRef.current)) return
+
+    prevFlowNodesRef.current = flowHighlightedNodes
+
+    // Wait for nodes to be rendered, then fit view to highlighted nodes
+    requestAnimationFrame(() => {
+      const allNodes = getNodes()
+      const targetNodes = allNodes.filter(n => flowHighlightedNodes.includes(n.id))
+      if (targetNodes.length > 0) {
+        fitView({
+          nodes: targetNodes,
+          padding: 0.3,
+          duration: 500,
+          maxZoom: 1.2
+        })
+      }
+    })
+  }, [flowHighlightedNodes, fitView, getNodes])
 
   const handleSelectElement = useCallback(
     (id: string) => {
@@ -62,17 +85,6 @@ export function Canvas() {
     [model, setView]
   )
 
-  const handleNodeMouseEnter = useCallback((_: React.MouseEvent, node: Node) => {
-    // Skip hover tracking for deployment view (causes nested node flickering)
-    if (currentView === 'deployment') return
-    setHoveredNode(node.id)
-  }, [currentView])
-
-  const handleNodeMouseLeave = useCallback(() => {
-    if (currentView === 'deployment') return
-    setHoveredNode(null)
-  }, [currentView])
-
   // Use ELK layout with semantic layering
   const { nodes, edges, isLayouting } = useElkLayout(model, {
     viewType: currentView,
@@ -84,7 +96,7 @@ export function Canvas() {
   })
 
   const connectedNodeIds = useMemo(() => {
-    const activeNode = hoveredNode || selectedElement
+    const activeNode = selectedElement
     if (!activeNode) return new Set<string>()
 
     const connected = new Set<string>([activeNode])
@@ -98,25 +110,51 @@ export function Canvas() {
     })
 
     return connected
-  }, [hoveredNode, selectedElement, edges])
-
-  const activeNode = hoveredNode || selectedElement
+  }, [selectedElement, edges])
 
   const nodesWithHoverState = useMemo(() => {
     // Skip hover highlighting for deployment view (no edges, causes nested node flickering)
-    if (!activeNode || currentView === 'deployment') return nodes
+    if (currentView === 'deployment') return nodes
+
+    // If flow is active, highlight the flow nodes
+    if (activeFlow && flowHighlightedNodes && flowHighlightedNodes.length > 0) {
+      return nodes.map((node) => ({
+        ...node,
+        className: `${node.className || ''} ${flowHighlightedNodes.includes(node.id) ? 'flow-highlighted' : 'flow-dimmed'}`.trim(),
+      }))
+    }
+
+    // Otherwise use selection-based highlighting
+    if (!selectedElement) return nodes
 
     return nodes.map((node) => ({
       ...node,
       className: `${node.className || ''} ${connectedNodeIds.has(node.id) ? 'highlighted' : 'dimmed'}`.trim(),
     }))
-  }, [nodes, activeNode, connectedNodeIds, currentView])
+  }, [nodes, selectedElement, connectedNodeIds, currentView, activeFlow, flowHighlightedNodes])
 
   const edgesWithHoverState = useMemo(() => {
-    if (!activeNode) return edges
+    // If flow is active, highlight edges that connect flow nodes
+    if (activeFlow && flowHighlightedNodes && flowHighlightedNodes.length >= 2) {
+      return edges.map((edge) => {
+        const isFlowEdge = flowHighlightedNodes.includes(edge.source) && flowHighlightedNodes.includes(edge.target)
+        return {
+          ...edge,
+          data: {
+            ...edge.data,
+            isDimmed: !isFlowEdge,
+            isHighlighted: isFlowEdge,
+            isFlowActive: isFlowEdge,
+          },
+        }
+      })
+    }
+
+    // Otherwise use selection-based highlighting
+    if (!selectedElement) return edges
 
     return edges.map((edge) => {
-      const isConnected = edge.source === activeNode || edge.target === activeNode
+      const isConnected = edge.source === selectedElement || edge.target === selectedElement
       return {
         ...edge,
         data: {
@@ -126,7 +164,7 @@ export function Canvas() {
         },
       }
     })
-  }, [edges, activeNode])
+  }, [edges, selectedElement, activeFlow, flowHighlightedNodes])
 
   useCanvasKeyboard({
     model,
@@ -156,8 +194,6 @@ export function Canvas() {
         edges={edgesWithHoverState as any}
         nodeTypes={nodeTypes as any}
         edgeTypes={edgeTypes as any}
-        onNodeMouseEnter={handleNodeMouseEnter}
-        onNodeMouseLeave={handleNodeMouseLeave}
         fitView
         fitViewOptions={{ padding: 0.15, maxZoom: 1.5 }}
         className="bg-[#242424]"
@@ -195,8 +231,22 @@ export function Canvas() {
         )}
       </ReactFlow>
       <ViewModeSwitcher />
-      {/* Hide React Flow attribution */}
-      <style>{`.react-flow__attribution { display: none !important; }`}</style>
+      {/* Hide React Flow attribution and add flow highlight styles */}
+      <style>{`
+        .react-flow__attribution { display: none !important; }
+        .flow-highlighted { opacity: 1 !important; }
+        .flow-dimmed { opacity: 0.3 !important; }
+        .dimmed { opacity: 0.3 !important; }
+        .highlighted { opacity: 1 !important; }
+      `}</style>
     </div>
+  )
+}
+
+export function Canvas() {
+  return (
+    <ReactFlowProvider>
+      <CanvasContent />
+    </ReactFlowProvider>
   )
 }

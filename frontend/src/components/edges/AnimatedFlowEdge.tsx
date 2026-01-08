@@ -7,7 +7,41 @@ export interface AnimatedFlowEdgeData {
   technology?: string[]
   isDimmed?: boolean
   isHighlighted?: boolean
+  isFlowActive?: boolean
+  tags?: string[]
   [key: string]: unknown
+}
+
+type EdgeStyle = {
+  strokeDasharray?: string
+  strokeWidth: number
+  className: string
+}
+
+function getEdgeStyleFromTags(tags?: string[], technology?: string[]): EdgeStyle {
+  const allTags = [...(tags || []), ...(technology || [])].map(t => t.toLowerCase())
+
+  if (allTags.some(t => t.includes('async') || t.includes('event') || t.includes('queue') || t.includes('kafka') || t.includes('rabbitmq'))) {
+    return { strokeDasharray: '8 4', strokeWidth: 2, className: 'stroke-amber-400' }
+  }
+
+  if (allTags.some(t => t.includes('grpc') || t.includes('rpc'))) {
+    return { strokeDasharray: '2 2', strokeWidth: 2, className: 'stroke-purple-400' }
+  }
+
+  if (allTags.some(t => t.includes('rest') || t.includes('http') || t.includes('api'))) {
+    return { strokeDasharray: undefined, strokeWidth: 2, className: 'stroke-blue-400' }
+  }
+
+  if (allTags.some(t => t.includes('db') || t.includes('database') || t.includes('sql') || t.includes('postgres') || t.includes('mysql'))) {
+    return { strokeDasharray: '4 2 1 2', strokeWidth: 2, className: 'stroke-emerald-400' }
+  }
+
+  if (allTags.some(t => t.includes('file') || t.includes('s3') || t.includes('storage'))) {
+    return { strokeDasharray: '1 3', strokeWidth: 2, className: 'stroke-cyan-400' }
+  }
+
+  return { strokeDasharray: undefined, strokeWidth: 2, className: 'stroke-slate-400' }
 }
 
 export const AnimatedFlowEdge = memo(
@@ -54,13 +88,17 @@ export const AnimatedFlowEdge = memo(
 
     const hasLabel = edgeData?.description
 
+    const baseStyle = getEdgeStyleFromTags(edgeData?.tags, edgeData?.technology)
     let edgeClassName = 'react-flow__edge-path transition-all duration-300'
-    let strokeWidth = 2
+    let strokeWidth = baseStyle.strokeWidth
+    let strokeDasharray = baseStyle.strokeDasharray
     let showLabel = alwaysShowLabels || isHovered
 
     if (activeFlow) {
       if (isActiveFlowEdge) {
         edgeClassName += ' flow-edge-active stroke-blue-500'
+        strokeDasharray = '12 12'
+        strokeWidth = 3
       } else if (isInFlow) {
         edgeClassName += ' stroke-blue-400/40'
       } else {
@@ -68,16 +106,14 @@ export const AnimatedFlowEdge = memo(
         showLabel = false
       }
     } else if (edgeData?.isHighlighted) {
-      // Bright: edge is connected to selected/hovered node
-      edgeClassName += ' stroke-blue-400'
+      edgeClassName += ` ${baseStyle.className}`
       strokeWidth = isHovered ? 3 : 2
       showLabel = true
     } else if (edgeData?.isDimmed) {
-      // Very dim for edges not connected to hovered node
       edgeClassName += ' stroke-slate-600/15'
       showLabel = false
     } else {
-      edgeClassName += isHovered ? ' stroke-blue-400' : ' stroke-slate-400'
+      edgeClassName += isHovered ? ' stroke-blue-400' : ` ${baseStyle.className}`
     }
 
     return (
@@ -99,7 +135,8 @@ export const AnimatedFlowEdge = memo(
           d={edgePath}
           strokeWidth={strokeWidth}
           markerEnd={markerEnd as string}
-          strokeDasharray={isActiveFlowEdge ? '12 12' : undefined}
+          strokeDasharray={strokeDasharray}
+          fill="none"
         />
         {isActiveFlowEdge && (
           <EdgeLabelRenderer>

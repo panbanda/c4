@@ -154,7 +154,8 @@ describe('AnimatedFlowEdge', () => {
       { wrapper }
     )
 
-    const path = container.querySelector('path.stroke-blue-400')
+    // Default stroke color for highlighted edges without specific technology
+    const path = container.querySelector('path.stroke-slate-400')
     expect(path).toBeInTheDocument()
   })
 

@@ -44,7 +44,7 @@ export const SystemNode = memo(({ data, selected }: NodeProps) => {
     <div
       className={`relative ${BASE_NODE_CLASSES.container} ${colorClass} border-2 ${
         selected ? BASE_NODE_CLASSES.selected : ''
-      } hover:${BASE_NODE_CLASSES.hover} cursor-pointer`}
+      } cursor-pointer`}
       style={{ width: NODE_SIZES.system.width, height: NODE_SIZES.system.height }}
       onClick={handleClick}
       onDoubleClick={handleDoubleClick}

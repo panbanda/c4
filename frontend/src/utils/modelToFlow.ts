@@ -245,6 +245,7 @@ function createEdge(
     data: {
       description: relationship.description,
       technology: relationship.technology,
+      tags: relationship.tags,
     },
     markerEnd: {
       type: 'arrowclosed',

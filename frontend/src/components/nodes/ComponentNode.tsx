@@ -30,7 +30,7 @@ export const ComponentNode = memo(({ data, selected }: NodeProps) => {
     <div
       className={`relative ${BASE_NODE_CLASSES.container} ${ELEMENT_COLORS.component.default} border-2 ${
         selected ? BASE_NODE_CLASSES.selected : ''
-      } hover:${BASE_NODE_CLASSES.hover} cursor-pointer`}
+      } cursor-pointer`}
       style={{ width: NODE_SIZES.component.width, height: NODE_SIZES.component.height }}
       onClick={handleClick}
     >
