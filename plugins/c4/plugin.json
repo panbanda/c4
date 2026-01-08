@@ -2,10 +2,12 @@
   "name": "c4-model-generator",
   "version": "0.1.0",
   "author": {
-    "name": "Panbanda",
-    "url": "https://github.com/panbanda"
+    "name": "Jonathan Reyes",
+    "email": "me@jonathanreyes.com"
   },
   "homepage": "https://github.com/panbanda/c4",
+  "repository": "https://github.com/panbanda/c4",
+  "license": "Apache-2.0",
   "description": "Generate C4 architecture model YAML by systematically analyzing codebases. Creates or updates a c4-model/ workspace with schema-compliant YAML.",
   "keywords": [
     "c4",
