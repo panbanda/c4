@@ -26,18 +26,28 @@ This creates/updates the `c4-model/` workspace, analyzing each codebase and gene
 
 ## What It Does
 
-1. **Creates workspace** if `c4-model/` doesn't exist
+1. **Creates workspace** if `c4-model/` doesn't exist (uses `c4 init`)
 2. **Analyzes codebases** to identify systems, containers, components
 3. **Discovers relationships** between elements
 4. **Generates YAML** files following the C4 schema
 5. **Updates incrementally** - preserves manual edits, adds new discoveries
 
-## Rendering
+## CLI Commands
 
-View the generated model with the c4 CLI:
+The c4 CLI provides these commands:
 
 ```bash
+# Initialize a new workspace
+c4 init c4-model
+
+# Validate YAML files
+c4 validate -C ./c4-model
+
+# Serve interactive visualization
 c4 serve -C ./c4-model
+
+# Export to static HTML
+c4 build -C ./c4-model
 ```
 
 ---
@@ -404,9 +414,8 @@ All elements support:
 - **`references/c4-schema.md`** - Complete JSON schema documentation
 - **`references/element-patterns.md`** - Common modeling patterns
 
-### Templates
-- **`resources/templates/`** - Starter YAML templates for each element type
-
 ### Scripts
-- **`scripts/analyze-rust.sh`** - Analyze Rust codebase structure
-- **`scripts/validate-c4.sh`** - Validate C4 YAML against schema
+- **`scripts/init-c4.sh`** - Initialize a new C4 workspace (`c4 init`)
+- **`scripts/validate-c4.sh`** - Validate C4 YAML against schema (`c4 validate`)
+- **`scripts/serve-c4.sh`** - Serve interactive visualization (`c4 serve`)
+- **`scripts/analyze-rust.sh`** - Analyze Rust codebase structure for C4 modeling
