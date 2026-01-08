@@ -392,6 +392,8 @@ function createEdge(
     markerEnd: {
       type: 'arrowclosed',
       color: '#94a3b8',
+      width: 20,
+      height: 20,
     },
   }
 }

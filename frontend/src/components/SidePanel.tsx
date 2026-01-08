@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useStore } from '../store/useStore'
-import { PropertyEditor } from './PropertyEditor'
 import { SidePanelTabs } from './SidePanelTabs'
 import { DependenciesTab } from './DependenciesTab'
 import { FlowsTab } from './FlowsTab'
@@ -16,7 +15,6 @@ export function SidePanel() {
   const model = useStore((state) => state.model)
   const selectedElement = useStore((state) => state.selectedElement)
   const selectElement = useStore((state) => state.selectElement)
-  const editMode = useStore((state) => state.editMode)
   const [activeTab, setActiveTab] = useState('overview')
 
   if (!model) {
@@ -32,14 +30,6 @@ export function SidePanel() {
         (el) => el.id === selectedElement
       )
     : null
-
-  if (editMode && element) {
-    return (
-      <aside className="w-80 bg-[#1e1e1e] border-l border-amber-500/30 p-4 overflow-y-auto" role="complementary" aria-label="Property editor">
-        <PropertyEditor element={element} />
-      </aside>
-    )
-  }
 
   // No element selected - show Start Here
   if (!element) {

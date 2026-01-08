@@ -15,6 +15,7 @@ import { DeploymentGroupNode } from './nodes/DeploymentGroupNode'
 import { InstanceNode } from './nodes/InstanceNode'
 import { AnimatedFlowEdge } from './edges/AnimatedFlowEdge'
 import { ViewModeSwitcher } from './ViewModeSwitcher'
+import { EdgeLegend } from './EdgeLegend'
 
 const nodeTypes = {
   person: PersonNode,
@@ -84,6 +85,12 @@ function CanvasContent() {
     },
     [model, setView]
   )
+
+  const handlePaneClick = useCallback(() => {
+    if (selectedElement) {
+      selectElement(null)
+    }
+  }, [selectedElement, selectElement])
 
   // Use ELK layout with semantic layering
   const { nodes, edges, isLayouting } = useElkLayout(model, {
@@ -194,6 +201,7 @@ function CanvasContent() {
         edges={edgesWithHoverState as any}
         nodeTypes={nodeTypes as any}
         edgeTypes={edgeTypes as any}
+        onPaneClick={handlePaneClick}
         fitView
         fitViewOptions={{ padding: 0.15, maxZoom: 1.5 }}
         className="bg-[#242424]"
@@ -231,6 +239,7 @@ function CanvasContent() {
         )}
       </ReactFlow>
       <ViewModeSwitcher />
+      <EdgeLegend />
       {/* Hide React Flow attribution and add flow highlight styles */}
       <style>{`
         .react-flow__attribution { display: none !important; }

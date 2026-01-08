@@ -68,7 +68,7 @@ describe('KeyboardShortcuts', () => {
   it('should display search shortcuts', () => {
     render(<KeyboardShortcuts />)
     fireEvent.keyDown(window, { key: '?' })
-    expect(screen.getByText('Search & Edit')).toBeInTheDocument()
+    expect(screen.getByText('Search')).toBeInTheDocument()
     expect(screen.getByText('Open command palette')).toBeInTheDocument()
   })
 

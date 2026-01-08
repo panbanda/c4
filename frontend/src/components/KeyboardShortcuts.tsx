@@ -31,12 +31,10 @@ const SHORTCUT_GROUPS: ShortcutGroup[] = [
     ],
   },
   {
-    title: 'Search & Edit',
+    title: 'Search',
     shortcuts: [
       { keys: ['\u2318', 'K'], description: 'Open command palette' },
       { keys: ['/'], description: 'Focus search' },
-      { keys: ['E'], description: 'Toggle edit mode' },
-      { keys: ['\u2318', 'S'], description: 'Save changes' },
     ],
   },
   {

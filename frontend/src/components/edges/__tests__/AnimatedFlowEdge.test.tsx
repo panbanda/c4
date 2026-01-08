@@ -165,7 +165,7 @@ describe('AnimatedFlowEdge', () => {
       { wrapper }
     )
 
-    const path = container.querySelector('path.stroke-slate-600\\/15')
+    const path = container.querySelector('path.stroke-slate-600\\/30')
     expect(path).toBeInTheDocument()
   })
 

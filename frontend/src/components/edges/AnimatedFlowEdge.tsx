@@ -22,26 +22,26 @@ function getEdgeStyleFromTags(tags?: string[], technology?: string[]): EdgeStyle
   const allTags = [...(tags || []), ...(technology || [])].map(t => t.toLowerCase())
 
   if (allTags.some(t => t.includes('async') || t.includes('event') || t.includes('queue') || t.includes('kafka') || t.includes('rabbitmq'))) {
-    return { strokeDasharray: '8 4', strokeWidth: 2, className: 'stroke-amber-400' }
+    return { strokeDasharray: '8 4', strokeWidth: 2.5, className: 'stroke-amber-400' }
   }
 
   if (allTags.some(t => t.includes('grpc') || t.includes('rpc'))) {
-    return { strokeDasharray: '2 2', strokeWidth: 2, className: 'stroke-purple-400' }
+    return { strokeDasharray: '2 2', strokeWidth: 2.5, className: 'stroke-purple-400' }
   }
 
   if (allTags.some(t => t.includes('rest') || t.includes('http') || t.includes('api'))) {
-    return { strokeDasharray: undefined, strokeWidth: 2, className: 'stroke-blue-400' }
+    return { strokeDasharray: undefined, strokeWidth: 2.5, className: 'stroke-blue-400' }
   }
 
   if (allTags.some(t => t.includes('db') || t.includes('database') || t.includes('sql') || t.includes('postgres') || t.includes('mysql'))) {
-    return { strokeDasharray: '4 2 1 2', strokeWidth: 2, className: 'stroke-emerald-400' }
+    return { strokeDasharray: '4 2 1 2', strokeWidth: 2.5, className: 'stroke-emerald-400' }
   }
 
   if (allTags.some(t => t.includes('file') || t.includes('s3') || t.includes('storage'))) {
-    return { strokeDasharray: '1 3', strokeWidth: 2, className: 'stroke-cyan-400' }
+    return { strokeDasharray: '1 3', strokeWidth: 2.5, className: 'stroke-cyan-400' }
   }
 
-  return { strokeDasharray: undefined, strokeWidth: 2, className: 'stroke-slate-400' }
+  return { strokeDasharray: undefined, strokeWidth: 2.5, className: 'stroke-slate-400' }
 }
 
 export const AnimatedFlowEdge = memo(
@@ -107,13 +107,14 @@ export const AnimatedFlowEdge = memo(
       }
     } else if (edgeData?.isHighlighted) {
       edgeClassName += ` ${baseStyle.className}`
-      strokeWidth = isHovered ? 3 : 2
+      strokeWidth = isHovered ? 3.5 : 2.5
       showLabel = true
     } else if (edgeData?.isDimmed) {
-      edgeClassName += ' stroke-slate-600/15'
+      edgeClassName += ' stroke-slate-600/30'
       showLabel = false
     } else {
       edgeClassName += isHovered ? ' stroke-blue-400' : ` ${baseStyle.className}`
+      strokeWidth = isHovered ? 3.5 : baseStyle.strokeWidth
     }
 
     return (
