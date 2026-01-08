@@ -33,7 +33,7 @@ export function CommandPalette() {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const { model, selectElement, setView, focusElement } = useStore()
+  const { model, selectElement, setView } = useStore()
 
   const handleOpen = useCallback(() => {
     setIsOpen(true)
