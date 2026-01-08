@@ -1,6 +1,6 @@
 [package]
 name = "c4"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2021"
 authors = ["C4 Contributors"]
 description = "C4 architecture visualization tool - parse, visualize, and export C4 models"

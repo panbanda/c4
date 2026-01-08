@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.1.5](https://github.com/panbanda/c4/compare/c4-v0.1.4...c4-v0.1.5) (2026-01-08)
+
+
+### Features
+
+* add C4 model generator Claude plugin ([c850b58](https://github.com/panbanda/c4/commit/c850b586778bdd11e99d650edc7ffb8da47d3f2f))
+* add C4 model generator Claude plugin ([9a53702](https://github.com/panbanda/c4/commit/9a53702e0132f02ea578d918290eb5aae5d36a08))
+* **frontend:** improve canvas UX and remove edit mode ([066ce5f](https://github.com/panbanda/c4/commit/066ce5fb08e9913632354a45e812a0daab3e6887))
+* **frontend:** improve UX with unified search, flow visualization, and edge styling ([bd02663](https://github.com/panbanda/c4/commit/bd02663cab219d165385f078cc48aab2b354b058))
+
+
+### Bug Fixes
+
+* **frontend:** remove PropertyEditor and FormField components ([26252f2](https://github.com/panbanda/c4/commit/26252f21175fccf0e77605823a7ea7f03c547e06))
+
 ## [0.1.4](https://github.com/panbanda/c4/compare/c4-v0.1.3...c4-v0.1.4) (2026-01-08)
 
 
