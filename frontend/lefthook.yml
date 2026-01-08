@@ -1,0 +1,13 @@
+pre-commit:
+  parallel: true
+  commands:
+    lint:
+      glob: "*.{ts,tsx}"
+      run: npm run lint
+    typecheck:
+      run: npx tsc --noEmit
+
+pre-push:
+  commands:
+    test-coverage:
+      run: npm run test:coverage
