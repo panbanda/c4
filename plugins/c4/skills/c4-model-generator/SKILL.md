@@ -413,9 +413,3 @@ All elements support:
 ### Reference Files
 - **`references/c4-schema.md`** - Complete JSON schema documentation
 - **`references/element-patterns.md`** - Common modeling patterns
-
-### Scripts
-- **`scripts/init-c4.sh`** - Initialize a new C4 workspace (`c4 init`)
-- **`scripts/validate-c4.sh`** - Validate C4 YAML against schema (`c4 validate`)
-- **`scripts/serve-c4.sh`** - Serve interactive visualization (`c4 serve`)
-- **`scripts/analyze-rust.sh`** - Analyze Rust codebase structure for C4 modeling
