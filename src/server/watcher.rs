@@ -127,7 +127,7 @@ mod tests {
         let yaml_file = temp_dir.path().join("test.yaml");
         fs::write(&yaml_file, "test: value").unwrap();
 
-        sleep(Duration::from_millis(200)).await;
+        sleep(Duration::from_millis(500)).await;
 
         {
             let captured = changes.lock().unwrap();
@@ -152,7 +152,7 @@ mod tests {
         let yml_file = temp_dir.path().join("config.yml");
         fs::write(&yml_file, "key: value").unwrap();
 
-        sleep(Duration::from_millis(200)).await;
+        sleep(Duration::from_millis(500)).await;
 
         {
             let captured = changes.lock().unwrap();
@@ -177,7 +177,7 @@ mod tests {
         let txt_file = temp_dir.path().join("readme.txt");
         fs::write(&txt_file, "not yaml").unwrap();
 
-        sleep(Duration::from_millis(200)).await;
+        sleep(Duration::from_millis(500)).await;
 
         {
             let captured = changes.lock().unwrap();
@@ -205,7 +205,7 @@ mod tests {
             sleep(Duration::from_millis(20)).await;
         }
 
-        sleep(Duration::from_millis(200)).await;
+        sleep(Duration::from_millis(500)).await;
 
         {
             let captured = changes.lock().unwrap();
@@ -232,7 +232,7 @@ mod tests {
         let yaml_file = temp_dir.path().join("after_close.yaml");
         fs::write(&yaml_file, "test: after close").unwrap();
 
-        sleep(Duration::from_millis(200)).await;
+        sleep(Duration::from_millis(500)).await;
 
         {
             let captured = changes.lock().unwrap();

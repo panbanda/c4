@@ -16,8 +16,8 @@ use axum::{
     routing::{get, put},
     Router,
 };
-use rust_embed::RustEmbed;
 use futures_util::{SinkExt, StreamExt};
+use rust_embed::RustEmbed;
 use serde::{Deserialize, Serialize};
 use std::net::SocketAddr;
 use std::path::PathBuf;

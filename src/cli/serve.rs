@@ -198,9 +198,7 @@ mod tests {
         // called within a tokio runtime context. This test verifies that creating
         // the runtime first, then the server inside it, works correctly.
         let runtime = tokio::runtime::Runtime::new().unwrap();
-        let result = runtime.block_on(async {
-            Server::new(config)
-        });
+        let result = runtime.block_on(async { Server::new(config) });
 
         assert!(result.is_ok());
     }
