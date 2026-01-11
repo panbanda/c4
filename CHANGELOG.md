@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.6](https://github.com/panbanda/c4/compare/c4-v0.1.5...c4-v0.1.6) (2026-01-11)
+
+
+### Features
+
+* implement build command with real parser and exporter ([ec6ad43](https://github.com/panbanda/c4/commit/ec6ad4369f1ea40e3bcc65b930227124acd9fc75))
+
+
+### Performance
+
+* optimize get_element from O(n) to O(1) lookup ([485b43d](https://github.com/panbanda/c4/commit/485b43dbb86bac456585163a3822cdf8d5503b85))
+
 ## [0.1.5](https://github.com/panbanda/c4/compare/c4-v0.1.4...c4-v0.1.5) (2026-01-08)
 
 
