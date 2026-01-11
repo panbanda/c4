@@ -1,31 +1,19 @@
-use crate::exporter::{Model, Result};
+use crate::exporter::Result;
+use crate::model;
 
-pub fn export_images(_model: &Model, output_dir: &str) -> Result<()> {
-    println!("Image export requires Playwright integration");
-    println!("This feature is not yet implemented");
-    println!("Output directory: {}", output_dir);
+pub fn export_images(_model: &model::Model, output_dir: &str) -> Result<()> {
+    eprintln!("Image export requires Playwright integration");
+    eprintln!("This feature is not yet implemented");
+    eprintln!("Output directory: {}", output_dir);
     Ok(())
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::exporter::Options;
 
-    fn create_test_model() -> Model {
-        Model {
-            persons: vec![],
-            systems: vec![],
-            containers: vec![],
-            components: vec![],
-            relationships: vec![],
-            flows: vec![],
-            deployments: vec![],
-            options: Options {
-                title: None,
-                theme: None,
-            },
-        }
+    fn create_test_model() -> model::Model {
+        model::Model::new()
     }
 
     #[test]
