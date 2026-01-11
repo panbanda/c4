@@ -36,8 +36,9 @@ pub struct Model {
     pub options: Options,
 
     // Indexes for fast lookup (not serialized)
+    // Stores (ElementType, index) for O(1) lookup by path
     #[serde(skip)]
-    elements_by_id: HashMap<String, usize>,
+    elements_by_id: HashMap<String, (ElementType, usize)>,
     #[serde(skip)]
     elements_by_type: HashMap<ElementType, Vec<String>>,
     #[serde(skip)]
@@ -84,13 +85,13 @@ impl Model {
         self.incoming_rels.clear();
 
         // Index persons
-        for idx in 0..self.persons.len() {
-            let p = &self.persons[idx];
+        for (idx, p) in self.persons.iter().enumerate() {
             let path = p.get_full_path();
             if self.elements_by_id.contains_key(&path) {
                 return Err(ModelError::DuplicateElement(path));
             }
-            self.elements_by_id.insert(path.clone(), idx);
+            self.elements_by_id
+                .insert(path.clone(), (ElementType::Person, idx));
             self.elements_by_type
                 .entry(ElementType::Person)
                 .or_default()
@@ -105,13 +106,13 @@ impl Model {
         }
 
         // Index systems
-        for idx in 0..self.systems.len() {
-            let s = &self.systems[idx];
+        for (idx, s) in self.systems.iter().enumerate() {
             let path = s.get_full_path();
             if self.elements_by_id.contains_key(&path) {
                 return Err(ModelError::DuplicateElement(path));
             }
-            self.elements_by_id.insert(path.clone(), idx);
+            self.elements_by_id
+                .insert(path.clone(), (ElementType::System, idx));
             self.elements_by_type
                 .entry(ElementType::System)
                 .or_default()
@@ -126,13 +127,13 @@ impl Model {
         }
 
         // Index containers
-        for idx in 0..self.containers.len() {
-            let c = &self.containers[idx];
+        for (idx, c) in self.containers.iter().enumerate() {
             let path = c.get_full_path();
             if self.elements_by_id.contains_key(&path) {
                 return Err(ModelError::DuplicateElement(path));
             }
-            self.elements_by_id.insert(path.clone(), idx);
+            self.elements_by_id
+                .insert(path.clone(), (ElementType::Container, idx));
             self.elements_by_type
                 .entry(ElementType::Container)
                 .or_default()
@@ -152,13 +153,13 @@ impl Model {
         }
 
         // Index components
-        for idx in 0..self.components.len() {
-            let c = &self.components[idx];
+        for (idx, c) in self.components.iter().enumerate() {
             let path = c.get_full_path();
             if self.elements_by_id.contains_key(&path) {
                 return Err(ModelError::DuplicateElement(path));
             }
-            self.elements_by_id.insert(path.clone(), idx);
+            self.elements_by_id
+                .insert(path.clone(), (ElementType::Component, idx));
             self.elements_by_type
                 .entry(ElementType::Component)
                 .or_default()
@@ -193,34 +194,15 @@ impl Model {
         Ok(())
     }
 
-    /// Returns an element by its full path
+    /// Returns an element by its full path using O(1) indexed lookup
     pub fn get_element(&self, path: &str) -> Option<&dyn Element> {
-        let _idx = self.elements_by_id.get(path)?;
+        let (element_type, idx) = self.elements_by_id.get(path)?;
 
-        // Determine type from path structure
-        let parts: Vec<&str> = path.split('.').collect();
-        match parts.len() {
-            1 => {
-                // Could be Person or System - check systems first
-                if let Some(sys) = self.systems.iter().find(|s| s.get_full_path() == path) {
-                    return Some(sys as &dyn Element);
-                }
-                self.persons
-                    .iter()
-                    .find(|p| p.get_full_path() == path)
-                    .map(|p| p as &dyn Element)
-            }
-            2 => self
-                .containers
-                .iter()
-                .find(|c| c.get_full_path() == path)
-                .map(|c| c as &dyn Element),
-            3 => self
-                .components
-                .iter()
-                .find(|c| c.get_full_path() == path)
-                .map(|c| c as &dyn Element),
-            _ => None,
+        match element_type {
+            ElementType::Person => self.persons.get(*idx).map(|p| p as &dyn Element),
+            ElementType::System => self.systems.get(*idx).map(|s| s as &dyn Element),
+            ElementType::Container => self.containers.get(*idx).map(|c| c as &dyn Element),
+            ElementType::Component => self.components.get(*idx).map(|c| c as &dyn Element),
         }
     }
 
