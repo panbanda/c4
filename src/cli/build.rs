@@ -364,4 +364,52 @@ mod tests {
         assert!(output_dir.join("model.json").exists());
         // Note: images/ directory is not created since image export is not yet implemented
     }
+
+    #[test]
+    fn test_build_verbose_mode() {
+        let dir = TempDir::new().unwrap();
+        fs::write(
+            dir.path().join("c4.mod.yaml"),
+            "version: \"1.0\"\nname: test\n",
+        )
+        .unwrap();
+
+        let output_dir = dir.path().join("dist");
+        let args = BuildArgs {
+            output: output_dir.clone(),
+            html: true,
+            json: false,
+            images: false,
+            format: "png".to_string(),
+        };
+
+        // Run with verbose=true to cover verbose output lines
+        run_build(args, dir.path(), true).unwrap();
+        assert!(output_dir.exists());
+    }
+
+    #[test]
+    fn test_build_images_verbose_mode() {
+        let dir = TempDir::new().unwrap();
+        fs::write(
+            dir.path().join("c4.mod.yaml"),
+            "version: \"1.0\"\nname: test\n",
+        )
+        .unwrap();
+
+        let output_dir = dir.path().join("dist");
+        let args = BuildArgs {
+            output: output_dir.clone(),
+            html: false,
+            json: false,
+            images: true,
+            format: "png".to_string(),
+        };
+
+        // Image export is currently unimplemented (prints message and returns Ok)
+        // Just verify the function runs without error in verbose mode
+        run_build(args, dir.path(), true).unwrap();
+        // Note: images directory is not created since export_images is a stub
+        assert!(output_dir.exists());
+    }
 }

@@ -286,4 +286,221 @@ systems:
         let content = fs::read_to_string(temp.path().join("data/model.yaml")).unwrap();
         let _: Value = serde_yaml::from_str(&content).unwrap();
     }
+
+    #[test]
+    fn test_writer_find_container_element() {
+        let temp = TempDir::new().unwrap();
+        let root = temp.path();
+
+        let mod_content = r#"
+version: "1.0"
+name: "test"
+include:
+  - "data/*.yaml"
+"#;
+        fs::write(root.join("c4.mod.yaml"), mod_content).unwrap();
+        fs::create_dir(root.join("data")).unwrap();
+
+        let data_content = r#"
+systems:
+  - id: "api"
+    name: "API System"
+    type: "system"
+
+containers:
+  - id: "web"
+    name: "Web App"
+    type: "container"
+    systemId: "api"
+"#;
+        fs::write(root.join("data/containers.yaml"), data_content).unwrap();
+
+        let mut parser = Parser::new(root);
+        parser.parse().unwrap();
+
+        let writer = Writer::new(&parser);
+        let file = writer.find_element_file("web", ElementType::Container).unwrap();
+        assert!(file.ends_with("containers.yaml"));
+    }
+
+    #[test]
+    fn test_writer_find_component_element() {
+        let temp = TempDir::new().unwrap();
+        let root = temp.path();
+
+        let mod_content = r#"
+version: "1.0"
+name: "test"
+include:
+  - "data/*.yaml"
+"#;
+        fs::write(root.join("c4.mod.yaml"), mod_content).unwrap();
+        fs::create_dir(root.join("data")).unwrap();
+
+        let data_content = r#"
+systems:
+  - id: "api"
+    name: "API System"
+    type: "system"
+
+containers:
+  - id: "backend"
+    name: "Backend"
+    type: "container"
+    systemId: "api"
+
+components:
+  - id: "handler"
+    name: "Handler"
+    type: "component"
+    systemId: "api"
+    containerId: "backend"
+"#;
+        fs::write(root.join("data/components.yaml"), data_content).unwrap();
+
+        let mut parser = Parser::new(root);
+        parser.parse().unwrap();
+
+        let writer = Writer::new(&parser);
+        let file = writer.find_element_file("handler", ElementType::Component).unwrap();
+        assert!(file.ends_with("components.yaml"));
+    }
+
+    #[test]
+    fn test_writer_update_container() {
+        let temp = TempDir::new().unwrap();
+        let root = temp.path();
+
+        let mod_content = r#"
+version: "1.0"
+name: "test"
+include:
+  - "data/*.yaml"
+"#;
+        fs::write(root.join("c4.mod.yaml"), mod_content).unwrap();
+        fs::create_dir(root.join("data")).unwrap();
+
+        let data_content = r#"
+systems:
+  - id: "api"
+    name: "API System"
+    type: "system"
+
+containers:
+  - id: "web"
+    name: "Web App"
+    type: "container"
+    systemId: "api"
+"#;
+        fs::write(root.join("data/containers.yaml"), data_content).unwrap();
+
+        let mut parser = Parser::new(root);
+        parser.parse().unwrap();
+
+        let writer = Writer::new(&parser);
+        let mut updates = HashMap::new();
+        updates.insert("name".to_string(), Value::String("Updated Web App".to_string()));
+
+        let result = writer.update_element("web", ElementType::Container, updates);
+        assert!(result.is_ok());
+
+        let content = fs::read_to_string(root.join("data/containers.yaml")).unwrap();
+        assert!(content.contains("Updated Web App"));
+    }
+
+    #[test]
+    fn test_writer_update_component() {
+        let temp = TempDir::new().unwrap();
+        let root = temp.path();
+
+        let mod_content = r#"
+version: "1.0"
+name: "test"
+include:
+  - "data/*.yaml"
+"#;
+        fs::write(root.join("c4.mod.yaml"), mod_content).unwrap();
+        fs::create_dir(root.join("data")).unwrap();
+
+        let data_content = r#"
+systems:
+  - id: "api"
+    name: "API System"
+    type: "system"
+
+containers:
+  - id: "backend"
+    name: "Backend"
+    type: "container"
+    systemId: "api"
+
+components:
+  - id: "handler"
+    name: "Handler"
+    type: "component"
+    systemId: "api"
+    containerId: "backend"
+"#;
+        fs::write(root.join("data/components.yaml"), data_content).unwrap();
+
+        let mut parser = Parser::new(root);
+        parser.parse().unwrap();
+
+        let writer = Writer::new(&parser);
+        let mut updates = HashMap::new();
+        updates.insert("name".to_string(), Value::String("Updated Handler".to_string()));
+
+        let result = writer.update_element("handler", ElementType::Component, updates);
+        assert!(result.is_ok());
+
+        let content = fs::read_to_string(root.join("data/components.yaml")).unwrap();
+        assert!(content.contains("Updated Handler"));
+    }
+
+    #[test]
+    fn test_writer_update_element_not_in_ast() {
+        let temp = TempDir::new().unwrap();
+        let root = temp.path();
+
+        let mod_content = r#"
+version: "1.0"
+name: "test"
+include:
+  - "data/*.yaml"
+"#;
+        fs::write(root.join("c4.mod.yaml"), mod_content).unwrap();
+        fs::create_dir(root.join("data")).unwrap();
+
+        // Create a file that parses as containing a person but the AST doesn't have it
+        let data_content = r#"
+persons:
+  - id: "user"
+    name: "User"
+    type: "person"
+"#;
+        fs::write(root.join("data/model.yaml"), data_content).unwrap();
+
+        let mut parser = Parser::new(root);
+        parser.parse().unwrap();
+
+        let writer = Writer::new(&parser);
+        let mut updates = HashMap::new();
+        updates.insert("name".to_string(), Value::String("Updated".to_string()));
+
+        // Try to update an element that exists in the file but with wrong ID
+        let result = writer.update_element("nonexistent", ElementType::Person, updates);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_contains_element_unknown_collection() {
+        let temp = TempDir::new().unwrap();
+        let parser = Parser::new(temp.path());
+
+        let writer = Writer::new(&parser);
+
+        let df = DataFile::default();
+        // Using an internal check - "unknown" collection key should return false
+        assert!(!writer.contains_element(&df, "any_id", "unknown"));
+    }
 }

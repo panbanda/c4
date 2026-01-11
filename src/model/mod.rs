@@ -854,4 +854,77 @@ mod tests {
         assert!(model.get_element("user2").is_some());
         assert!(model.get_element("sys1").is_some());
     }
+
+    #[test]
+    fn test_model_error_display() {
+        let err = ModelError::DuplicateElement("sys1.web".to_string());
+        let msg = format!("{}", err);
+        assert_eq!(msg, "duplicate element ID: sys1.web");
+    }
+
+    #[test]
+    fn test_build_indexes_detects_duplicate_systems() {
+        let mut model = Model::new();
+        model.systems.push(create_test_system("sys1"));
+        model.systems.push(create_test_system("sys1"));
+
+        let result = model.build_indexes();
+        assert!(result.is_err());
+        match result {
+            Err(ModelError::DuplicateElement(path)) => {
+                assert_eq!(path, "sys1");
+            }
+            _ => panic!("Expected DuplicateElement error"),
+        }
+    }
+
+    #[test]
+    fn test_build_indexes_detects_duplicate_containers() {
+        let mut model = Model::new();
+        model.systems.push(create_test_system("sys1"));
+        model.containers.push(create_test_container("sys1", "web"));
+        model.containers.push(create_test_container("sys1", "web"));
+
+        let result = model.build_indexes();
+        assert!(result.is_err());
+        match result {
+            Err(ModelError::DuplicateElement(path)) => {
+                assert_eq!(path, "sys1.web");
+            }
+            _ => panic!("Expected DuplicateElement error"),
+        }
+    }
+
+    #[test]
+    fn test_build_indexes_detects_duplicate_components() {
+        let mut model = Model::new();
+        model.systems.push(create_test_system("sys1"));
+        model.containers.push(create_test_container("sys1", "web"));
+        model
+            .components
+            .push(create_test_component("sys1", "web", "ctrl"));
+        model
+            .components
+            .push(create_test_component("sys1", "web", "ctrl"));
+
+        let result = model.build_indexes();
+        assert!(result.is_err());
+        match result {
+            Err(ModelError::DuplicateElement(path)) => {
+                assert_eq!(path, "sys1.web.ctrl");
+            }
+            _ => panic!("Expected DuplicateElement error"),
+        }
+    }
+
+    #[test]
+    fn test_get_element_invalid_path_depth() {
+        let mut model = Model::new();
+        model.systems.push(create_test_system("sys1"));
+        model.build_indexes().unwrap();
+
+        // Path with 4+ segments doesn't match any element type
+        let element = model.get_element("a.b.c.d");
+        assert!(element.is_none());
+    }
 }

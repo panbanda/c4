@@ -315,4 +315,133 @@ mod tests {
         let result = run_validate(args, &dir.path().to_path_buf(), false);
         assert!(result.is_ok());
     }
+
+    #[test]
+    fn test_validate_verbose_output() {
+        let dir = TempDir::new().unwrap();
+        fs::write(
+            dir.path().join("c4.mod.yaml"),
+            "version: \"1.0\"\nname: test\n",
+        )
+        .unwrap();
+
+        let args = ValidateArgs {
+            files: vec![],
+            strict: false,
+            json: false,
+        };
+
+        let result = run_validate(args, &dir.path().to_path_buf(), true);
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_validate_with_invalid_yaml() {
+        let dir = TempDir::new().unwrap();
+        fs::write(
+            dir.path().join("c4.mod.yaml"),
+            "version: \"1.0\"\nname: test\ninclude:\n  - \"**/*.yaml\"\n",
+        )
+        .unwrap();
+        fs::write(
+            dir.path().join("invalid.yaml"),
+            "this is: [ invalid yaml content",
+        )
+        .unwrap();
+
+        let args = ValidateArgs {
+            files: vec![],
+            strict: false,
+            json: false,
+        };
+
+        let result = run_validate(args, &dir.path().to_path_buf(), false);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_validation_stats_default() {
+        let stats = ValidationStats::default();
+        assert_eq!(stats.persons, 0);
+        assert_eq!(stats.systems, 0);
+        assert_eq!(stats.containers, 0);
+        assert_eq!(stats.components, 0);
+        assert_eq!(stats.relationships, 0);
+        assert_eq!(stats.flows, 0);
+        assert_eq!(stats.deployments, 0);
+    }
+
+    #[test]
+    fn test_validation_result_with_errors() {
+        let result = ValidationResult {
+            valid: false,
+            errors: vec![ValidationError {
+                message: "test error".to_string(),
+                file: Some("test.yaml".to_string()),
+                line: Some(10),
+            }],
+            warnings: vec![],
+            stats: ValidationStats::default(),
+        };
+
+        let json = serde_json::to_string(&result).unwrap();
+        assert!(json.contains("\"valid\":false"));
+        assert!(json.contains("test error"));
+    }
+
+    #[test]
+    fn test_validation_result_skips_empty_errors() {
+        let result = ValidationResult {
+            valid: true,
+            errors: vec![],
+            warnings: vec![],
+            stats: ValidationStats::default(),
+        };
+
+        let json = serde_json::to_string(&result).unwrap();
+        assert!(!json.contains("\"errors\""));
+        assert!(!json.contains("\"warnings\""));
+    }
+
+    #[test]
+    fn test_print_human_readable_passed() {
+        let result = ValidationResult {
+            valid: true,
+            errors: vec![],
+            warnings: vec![],
+            stats: ValidationStats {
+                persons: 1,
+                systems: 2,
+                containers: 3,
+                components: 4,
+                relationships: 5,
+                flows: 6,
+                deployments: 7,
+            },
+        };
+
+        // Should not panic
+        print_human_readable(&result);
+    }
+
+    #[test]
+    fn test_print_human_readable_failed() {
+        let result = ValidationResult {
+            valid: false,
+            errors: vec![ValidationError {
+                message: "test error".to_string(),
+                file: None,
+                line: None,
+            }],
+            warnings: vec![ValidationError {
+                message: "test warning".to_string(),
+                file: None,
+                line: None,
+            }],
+            stats: ValidationStats::default(),
+        };
+
+        // Should not panic
+        print_human_readable(&result);
+    }
 }

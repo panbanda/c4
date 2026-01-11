@@ -266,4 +266,10 @@ mod tests {
 
         assert_eq!(client.id, "test-id");
     }
+
+    #[tokio::test]
+    async fn test_hub_default() {
+        let hub = Hub::default();
+        assert_eq!(hub.client_count().await, 0);
+    }
 }

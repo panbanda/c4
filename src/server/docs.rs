@@ -535,4 +535,139 @@ mod tests {
         assert!(nav.is_dir);
         assert!(nav.children.is_empty());
     }
+
+    #[test]
+    fn test_render_navigation_with_dir_items() {
+        let nav = NavItem {
+            name: "docs".to_string(),
+            path: "/docs".to_string(),
+            is_dir: true,
+            children: vec![NavItem {
+                name: "api".to_string(),
+                path: "/docs/api".to_string(),
+                is_dir: true,
+                children: vec![NavItem {
+                    name: "overview".to_string(),
+                    path: "/docs/api/overview".to_string(),
+                    is_dir: false,
+                    children: Vec::new(),
+                }],
+            }],
+        };
+
+        let html = render_navigation(&nav);
+
+        assert!(html.contains("<ul>"));
+        assert!(html.contains("class=\"dir\""));
+        assert!(html.contains("api"));
+        assert!(html.contains("dir-children"));
+    }
+
+    #[test]
+    fn test_rewrite_markdown_links_nested_path() {
+        let html = r#"<a href="sub/page.md">Nested</a>"#;
+        let result = rewrite_markdown_links(html, "/docs/section/index");
+
+        assert!(result.contains("/docs/section/sub/page"));
+    }
+
+    #[test]
+    fn test_rewrite_markdown_links_no_extension() {
+        let html = r#"<a href="noext">No ext</a>"#;
+        let result = rewrite_markdown_links(html, "/docs/index");
+
+        // Should not modify hrefs without .md extension
+        assert!(result.contains(r#"href="noext""#));
+    }
+
+    #[test]
+    fn test_build_navigation_sorts_correctly() {
+        let temp_dir = TempDir::new().unwrap();
+        let docs_dir = temp_dir.path().join("docs");
+        fs::create_dir(&docs_dir).unwrap();
+
+        // Create files and a directory
+        fs::write(docs_dir.join("zebra.md"), "# Zebra").unwrap();
+        fs::write(docs_dir.join("alpha.md"), "# Alpha").unwrap();
+        let subdir = docs_dir.join("beta");
+        fs::create_dir(&subdir).unwrap();
+
+        let nav = build_navigation(&docs_dir).unwrap();
+
+        // Directories come first (beta), then files sorted alphabetically (alpha, zebra)
+        assert_eq!(nav.children.len(), 3);
+        assert!(nav.children[0].is_dir); // beta directory first
+        assert_eq!(nav.children[0].name, "beta");
+        assert_eq!(nav.children[1].name, "alpha");
+        assert_eq!(nav.children[2].name, "zebra");
+    }
+
+    #[test]
+    fn test_build_navigation_ignores_non_md_files() {
+        let temp_dir = TempDir::new().unwrap();
+        let docs_dir = temp_dir.path().join("docs");
+        fs::create_dir(&docs_dir).unwrap();
+
+        fs::write(docs_dir.join("valid.md"), "# Valid").unwrap();
+        fs::write(docs_dir.join("invalid.txt"), "Not markdown").unwrap();
+        fs::write(docs_dir.join("image.png"), "fake image").unwrap();
+
+        let nav = build_navigation(&docs_dir).unwrap();
+
+        // Only the .md file should be included
+        assert_eq!(nav.children.len(), 1);
+        assert_eq!(nav.children[0].name, "valid");
+    }
+
+    #[test]
+    fn test_extract_title_with_attributes() {
+        let html = r#"<h1 class="title" id="main">Title with Attrs</h1>"#;
+        let title = extract_title(html);
+
+        assert_eq!(title, "Title with Attrs");
+    }
+
+    #[test]
+    fn test_render_markdown_with_tables() {
+        let temp_dir = TempDir::new().unwrap();
+        let handler = DocsHandler::new(temp_dir.path());
+
+        let markdown = "| Col1 | Col2 |\n|------|------|\n| A | B |";
+        let html = handler.render_markdown(markdown);
+
+        assert!(html.contains("<table>") || html.contains("<thead>"));
+    }
+
+    #[test]
+    fn test_render_markdown_with_code_blocks() {
+        let temp_dir = TempDir::new().unwrap();
+        let handler = DocsHandler::new(temp_dir.path());
+
+        let markdown = "```rust\nfn main() {}\n```";
+        let html = handler.render_markdown(markdown);
+
+        // pulldown-cmark renders code blocks in <pre> tags
+        assert!(html.contains("<pre>") || html.contains("fn main"));
+    }
+
+    #[test]
+    fn test_render_navigation_empty_dir() {
+        let nav = NavItem {
+            name: "docs".to_string(),
+            path: "/docs".to_string(),
+            is_dir: true,
+            children: vec![NavItem {
+                name: "empty_dir".to_string(),
+                path: "/docs/empty_dir".to_string(),
+                is_dir: true,
+                children: Vec::new(), // Empty directory
+            }],
+        };
+
+        let html = render_navigation(&nav);
+
+        // Should render the directory without dir-children div since no children
+        assert!(html.contains("empty_dir"));
+        assert!(!html.contains("dir-children"));
+    }
 }

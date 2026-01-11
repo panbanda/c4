@@ -329,4 +329,92 @@ systems:
         let files = parser.find_files("data/*.yaml").unwrap();
         assert_eq!(files.len(), 1);
     }
+
+    #[test]
+    fn test_parser_mod_file_empty_version() {
+        let temp = TempDir::new().unwrap();
+        let root = temp.path();
+
+        let mod_content = r#"
+version: ""
+name: "test"
+"#;
+        fs::write(root.join("c4.mod.yaml"), mod_content).unwrap();
+
+        let mut parser = Parser::new(root);
+        let result = parser.load_mod_file(&root.join("c4.mod.yaml"));
+        assert!(result.is_err());
+        assert!(result.unwrap_err().to_string().contains("Missing version"));
+    }
+
+    #[test]
+    fn test_parser_mod_file_empty_name() {
+        let temp = TempDir::new().unwrap();
+        let root = temp.path();
+
+        let mod_content = r#"
+version: "1.0"
+name: ""
+"#;
+        fs::write(root.join("c4.mod.yaml"), mod_content).unwrap();
+
+        let mut parser = Parser::new(root);
+        let result = parser.load_mod_file(&root.join("c4.mod.yaml"));
+        assert!(result.is_err());
+        assert!(result.unwrap_err().to_string().contains("Missing name"));
+    }
+
+    #[test]
+    fn test_parser_container_without_system_context() {
+        let temp = TempDir::new().unwrap();
+        let root = temp.path();
+
+        let mod_content = r#"
+version: "1.0"
+name: "test"
+include:
+  - "**/*.yaml"
+"#;
+        fs::write(root.join("c4.mod.yaml"), mod_content).unwrap();
+
+        let data_content = r#"
+containers:
+  - id: "web"
+    name: "Web App"
+    type: "container"
+"#;
+        fs::write(root.join("containers.yaml"), data_content).unwrap();
+
+        let mut parser = Parser::new(root);
+        let result = parser.parse();
+        assert!(result.is_err());
+        assert!(!parser.errors().is_empty());
+    }
+
+    #[test]
+    fn test_parser_component_without_context() {
+        let temp = TempDir::new().unwrap();
+        let root = temp.path();
+
+        let mod_content = r#"
+version: "1.0"
+name: "test"
+include:
+  - "**/*.yaml"
+"#;
+        fs::write(root.join("c4.mod.yaml"), mod_content).unwrap();
+
+        let data_content = r#"
+components:
+  - id: "handler"
+    name: "Handler"
+    type: "component"
+"#;
+        fs::write(root.join("components.yaml"), data_content).unwrap();
+
+        let mut parser = Parser::new(root);
+        let result = parser.parse();
+        assert!(result.is_err());
+        assert!(!parser.errors().is_empty());
+    }
 }
