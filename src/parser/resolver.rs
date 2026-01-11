@@ -161,10 +161,7 @@ impl<'a> Resolver<'a> {
 }
 
 fn common_prefix_len(a: &str, b: &str) -> usize {
-    a.bytes()
-        .zip(b.bytes())
-        .take_while(|(a, b)| a == b)
-        .count()
+    a.bytes().zip(b.bytes()).take_while(|(a, b)| a == b).count()
 }
 
 #[cfg(test)]

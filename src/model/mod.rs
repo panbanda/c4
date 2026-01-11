@@ -236,12 +236,7 @@ impl Model {
     pub fn get_children(&self, path: &str) -> Vec<&dyn Element> {
         self.children_by_id
             .get(path)
-            .map(|paths| {
-                paths
-                    .iter()
-                    .filter_map(|p| self.get_element(p))
-                    .collect()
-            })
+            .map(|paths| paths.iter().filter_map(|p| self.get_element(p)).collect())
             .unwrap_or_default()
     }
 
