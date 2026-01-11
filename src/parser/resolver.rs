@@ -370,4 +370,225 @@ mod tests {
         assert_eq!(common_prefix_len("abc", "xyz"), 0);
         assert_eq!(common_prefix_len("a", "api"), 1);
     }
+
+    #[test]
+    fn test_resolver_validate_flow_steps() {
+        use crate::model::{Flow, FlowStep};
+
+        let mut model = create_test_model();
+        model.persons.push(create_person("user"));
+        model.systems.push(create_system("api"));
+        model.flows.push(Flow {
+            id: "login".to_string(),
+            name: "Login Flow".to_string(),
+            description: None,
+            steps: vec![FlowStep {
+                seq: 1,
+                from: "user".to_string(),
+                to: "api".to_string(),
+                description: Some("Login".to_string()),
+                technology: None,
+            }],
+            tags: None,
+        });
+
+        model.build_indexes().unwrap();
+
+        let mut resolver = Resolver::new(&model);
+        let errors = resolver.resolve();
+        assert_eq!(errors.len(), 0);
+    }
+
+    #[test]
+    fn test_resolver_validate_invalid_flow_step() {
+        use crate::model::{Flow, FlowStep};
+
+        let mut model = create_test_model();
+        model.persons.push(create_person("user"));
+        model.flows.push(Flow {
+            id: "login".to_string(),
+            name: "Login Flow".to_string(),
+            description: None,
+            steps: vec![FlowStep {
+                seq: 1,
+                from: "user".to_string(),
+                to: "nonexistent".to_string(),
+                description: None,
+                technology: None,
+            }],
+            tags: None,
+        });
+
+        model.build_indexes().unwrap();
+
+        let mut resolver = Resolver::new(&model);
+        let errors = resolver.resolve();
+        assert_eq!(errors.len(), 1);
+        assert!(errors[0].path.contains("flow.login.step.1.to"));
+    }
+
+    #[test]
+    fn test_resolver_validate_deployment_instances() {
+        use crate::model::{ContainerInstance, Deployment, DeploymentNode};
+
+        let mut model = create_test_model();
+        model.systems.push(create_system("api"));
+        model.containers.push(Container {
+            base: BaseElement {
+                id: "web".to_string(),
+                name: "Web Container".to_string(),
+                description: None,
+                tags: None,
+                properties: None,
+            },
+            element_type: ElementType::Container,
+            technology: None,
+            system_id: "api".to_string(),
+        });
+        model.deployments.push(Deployment {
+            id: "prod".to_string(),
+            name: "Production".to_string(),
+            description: None,
+            nodes: Some(vec![DeploymentNode {
+                id: "server".to_string(),
+                name: "Server".to_string(),
+                technology: None,
+                children: None,
+                instances: Some(vec![ContainerInstance {
+                    container: "api.web".to_string(),
+                    replicas: Some(3),
+                    properties: None,
+                }]),
+                properties: None,
+            }]),
+        });
+
+        model.build_indexes().unwrap();
+
+        let mut resolver = Resolver::new(&model);
+        let errors = resolver.resolve();
+        assert_eq!(errors.len(), 0);
+    }
+
+    #[test]
+    fn test_resolver_validate_invalid_deployment_instance() {
+        use crate::model::{ContainerInstance, Deployment, DeploymentNode};
+
+        let mut model = create_test_model();
+        model.deployments.push(Deployment {
+            id: "prod".to_string(),
+            name: "Production".to_string(),
+            description: None,
+            nodes: Some(vec![DeploymentNode {
+                id: "server".to_string(),
+                name: "Server".to_string(),
+                technology: None,
+                children: None,
+                instances: Some(vec![ContainerInstance {
+                    container: "nonexistent".to_string(),
+                    replicas: None,
+                    properties: None,
+                }]),
+                properties: None,
+            }]),
+        });
+
+        model.build_indexes().unwrap();
+
+        let mut resolver = Resolver::new(&model);
+        let errors = resolver.resolve();
+        assert_eq!(errors.len(), 1);
+        assert!(errors[0]
+            .path
+            .contains("deployment.prod.node.server.instance"));
+    }
+
+    #[test]
+    fn test_resolver_validate_nested_deployment_nodes() {
+        use crate::model::{ContainerInstance, Deployment, DeploymentNode};
+
+        let mut model = create_test_model();
+        model.deployments.push(Deployment {
+            id: "prod".to_string(),
+            name: "Production".to_string(),
+            description: None,
+            nodes: Some(vec![DeploymentNode {
+                id: "cluster".to_string(),
+                name: "Cluster".to_string(),
+                technology: None,
+                children: Some(vec![DeploymentNode {
+                    id: "node1".to_string(),
+                    name: "Node 1".to_string(),
+                    technology: None,
+                    children: None,
+                    instances: Some(vec![ContainerInstance {
+                        container: "invalid".to_string(),
+                        replicas: None,
+                        properties: None,
+                    }]),
+                    properties: None,
+                }]),
+                instances: None,
+                properties: None,
+            }]),
+        });
+
+        model.build_indexes().unwrap();
+
+        let mut resolver = Resolver::new(&model);
+        let errors = resolver.resolve();
+        assert_eq!(errors.len(), 1);
+        assert!(errors[0].message.contains("invalid"));
+    }
+
+    #[test]
+    fn test_resolver_validate_invalid_component_parent() {
+        use crate::model::Component;
+
+        let mut model = create_test_model();
+        model.systems.push(create_system("api"));
+        model.components.push(Component {
+            base: BaseElement {
+                id: "handler".to_string(),
+                name: "Handler".to_string(),
+                description: None,
+                tags: None,
+                properties: None,
+            },
+            element_type: ElementType::Component,
+            technology: None,
+            system_id: "api".to_string(),
+            container_id: "nonexistent".to_string(),
+        });
+
+        model.build_indexes().unwrap();
+
+        let mut resolver = Resolver::new(&model);
+        let errors = resolver.resolve();
+        assert_eq!(errors.len(), 1);
+        assert!(errors[0].message.contains("unknown container"));
+    }
+
+    #[test]
+    fn test_resolver_error_with_suggestion() {
+        let mut model = create_test_model();
+        model.persons.push(create_person("user"));
+        model.systems.push(create_system("api-gateway"));
+        model.relationships.push(Relationship {
+            from: "user".to_string(),
+            to: "api-gate".to_string(), // Typo, close to api-gateway
+            description: None,
+            technology: None,
+            tags: None,
+            properties: None,
+        });
+
+        model.build_indexes().unwrap();
+
+        let mut resolver = Resolver::new(&model);
+        let errors = resolver.resolve();
+        assert_eq!(errors.len(), 1);
+        assert!(errors[0].message.contains("did you mean"));
+        assert!(errors[0].message.contains("api-gateway"));
+    }
 }

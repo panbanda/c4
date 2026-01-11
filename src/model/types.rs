@@ -1029,4 +1029,124 @@ mod tests {
         assert_eq!(json["properties"]["number"], 42);
         assert_eq!(json["properties"]["bool"], true);
     }
+
+    #[test]
+    fn test_person_element_trait_all_methods() {
+        let mut props = HashMap::new();
+        props.insert("key".to_string(), json!("value"));
+
+        let person = Person {
+            base: BaseElement {
+                id: "user1".to_string(),
+                name: "John Doe".to_string(),
+                description: Some("A user".to_string()),
+                tags: Some(vec!["external".to_string()]),
+                properties: Some(props),
+            },
+            element_type: ElementType::Person,
+        };
+
+        assert_eq!(person.get_id(), "user1");
+        assert_eq!(person.get_name(), "John Doe");
+        assert_eq!(person.get_description(), "A user");
+        assert_eq!(person.get_tags(), &["external"]);
+        assert_eq!(person.get_properties().get("key").unwrap(), "value");
+        assert_eq!(person.get_type(), ElementType::Person);
+        assert_eq!(person.get_full_path(), "user1");
+    }
+
+    #[test]
+    fn test_software_system_element_trait_all_methods() {
+        let mut props = HashMap::new();
+        props.insert("env".to_string(), json!("prod"));
+
+        let system = SoftwareSystem {
+            base: BaseElement {
+                id: "api".to_string(),
+                name: "API".to_string(),
+                description: Some("The API".to_string()),
+                tags: Some(vec!["internal".to_string()]),
+                properties: Some(props),
+            },
+            element_type: ElementType::System,
+            external: Some(false),
+        };
+
+        assert_eq!(system.get_id(), "api");
+        assert_eq!(system.get_name(), "API");
+        assert_eq!(system.get_description(), "The API");
+        assert_eq!(system.get_tags(), &["internal"]);
+        assert_eq!(system.get_properties().get("env").unwrap(), "prod");
+        assert_eq!(system.get_type(), ElementType::System);
+        assert_eq!(system.get_full_path(), "api");
+    }
+
+    #[test]
+    fn test_container_element_trait_all_methods() {
+        let mut props = HashMap::new();
+        props.insert("port".to_string(), json!(8080));
+
+        let container = Container {
+            base: BaseElement {
+                id: "web".to_string(),
+                name: "Web Server".to_string(),
+                description: Some("Serves web requests".to_string()),
+                tags: Some(vec!["frontend".to_string()]),
+                properties: Some(props),
+            },
+            element_type: ElementType::Container,
+            technology: Some(Technology::new(vec!["Go".to_string()])),
+            system_id: "api".to_string(),
+        };
+
+        assert_eq!(container.get_id(), "web");
+        assert_eq!(container.get_name(), "Web Server");
+        assert_eq!(container.get_description(), "Serves web requests");
+        assert_eq!(container.get_tags(), &["frontend"]);
+        assert_eq!(container.get_properties().get("port").unwrap(), 8080);
+        assert_eq!(container.get_type(), ElementType::Container);
+        assert_eq!(container.get_full_path(), "api.web");
+    }
+
+    #[test]
+    fn test_component_element_trait_all_methods() {
+        let mut props = HashMap::new();
+        props.insert("version".to_string(), json!("1.0"));
+
+        let component = Component {
+            base: BaseElement {
+                id: "handler".to_string(),
+                name: "Request Handler".to_string(),
+                description: Some("Handles requests".to_string()),
+                tags: Some(vec!["core".to_string()]),
+                properties: Some(props),
+            },
+            element_type: ElementType::Component,
+            technology: Some(Technology::new(vec!["Go".to_string(), "gRPC".to_string()])),
+            system_id: "api".to_string(),
+            container_id: "web".to_string(),
+        };
+
+        assert_eq!(component.get_id(), "handler");
+        assert_eq!(component.get_name(), "Request Handler");
+        assert_eq!(component.get_description(), "Handles requests");
+        assert_eq!(component.get_tags(), &["core"]);
+        assert_eq!(component.get_properties().get("version").unwrap(), "1.0");
+        assert_eq!(component.get_type(), ElementType::Component);
+        assert_eq!(component.get_full_path(), "api.web.handler");
+    }
+
+    #[test]
+    fn test_default_type_functions() {
+        assert_eq!(default_person_type(), ElementType::Person);
+        assert_eq!(default_system_type(), ElementType::System);
+        assert_eq!(default_container_type(), ElementType::Container);
+        assert_eq!(default_component_type(), ElementType::Component);
+    }
+
+    #[test]
+    fn test_options_default() {
+        let options = Options::default();
+        assert!(!options.show_minimap);
+    }
 }
