@@ -498,7 +498,9 @@ mod tests {
         let mut resolver = Resolver::new(&model);
         let errors = resolver.resolve();
         assert_eq!(errors.len(), 1);
-        assert!(errors[0].path.contains("deployment.prod.node.server.instance"));
+        assert!(errors[0]
+            .path
+            .contains("deployment.prod.node.server.instance"));
     }
 
     #[test]

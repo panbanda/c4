@@ -319,7 +319,9 @@ containers:
         parser.parse().unwrap();
 
         let writer = Writer::new(&parser);
-        let file = writer.find_element_file("web", ElementType::Container).unwrap();
+        let file = writer
+            .find_element_file("web", ElementType::Container)
+            .unwrap();
         assert!(file.ends_with("containers.yaml"));
     }
 
@@ -362,7 +364,9 @@ components:
         parser.parse().unwrap();
 
         let writer = Writer::new(&parser);
-        let file = writer.find_element_file("handler", ElementType::Component).unwrap();
+        let file = writer
+            .find_element_file("handler", ElementType::Component)
+            .unwrap();
         assert!(file.ends_with("components.yaml"));
     }
 
@@ -399,7 +403,10 @@ containers:
 
         let writer = Writer::new(&parser);
         let mut updates = HashMap::new();
-        updates.insert("name".to_string(), Value::String("Updated Web App".to_string()));
+        updates.insert(
+            "name".to_string(),
+            Value::String("Updated Web App".to_string()),
+        );
 
         let result = writer.update_element("web", ElementType::Container, updates);
         assert!(result.is_ok());
@@ -448,7 +455,10 @@ components:
 
         let writer = Writer::new(&parser);
         let mut updates = HashMap::new();
-        updates.insert("name".to_string(), Value::String("Updated Handler".to_string()));
+        updates.insert(
+            "name".to_string(),
+            Value::String("Updated Handler".to_string()),
+        );
 
         let result = writer.update_element("handler", ElementType::Component, updates);
         assert!(result.is_ok());
